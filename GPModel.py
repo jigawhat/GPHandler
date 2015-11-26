@@ -11,7 +11,7 @@ class GPModel(object):
         n = len(y)
         print("Creating GP Model, n = " + str(n))
 
-        # TODO add slicing if dataset too large
+        # TODO add shuffling if dataset too large
         # TODO add multiple kernel combinations as model parameters
 
         # Create gaussian process and fit to data
@@ -35,7 +35,7 @@ class GPModel(object):
 
     def predict_and_format(self, X_external_format):
         X = self.formatter.format_input_X(X_external_format)
-        y, sigma = predict(X)
-        return format_output_y_sigma(y, sigma)
+        y, sigma = self.predict(X)
+        return self.formatter.format_output_y_sigma(y, sigma)
 
 

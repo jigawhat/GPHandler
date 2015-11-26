@@ -36,14 +36,14 @@ class DataFormatter(object):
 
     def format_input_X(self, X):
         years_range = X["end_date"] - X["start_date"]
-        dates = np.atleast_2d([X["start_date"] + x for x in np.arange(0, years, 1.0/12)]).T
-        return np.atleast_2d([[ date[0], self.p_mappings[X["property_type"]],
-                                         self.e_mappings[X["estate_type"]]] for date in dates]).T
+        dates = np.atleast_2d([X["start_date"] + x for x in np.arange(0, years_range, 1.0/12)]).T
+        return [[ date[0], self.p_mappings[X["property_type"]],
+                           self.e_mappings[X["estate_type"]]] for date in dates]
 
     # Correct and format output prices
     def format_output_y_sigma(self, y, sigma):
         price_preds_gbp = map(lambda x: int(x), (y / self.price_scaling_factor) + self.price_zero_val)
         sigma_gbp = map(lambda x: int(x), sigma / self.price_scaling_factor)
-        return list([price_pred_gbp, sigma_gbp])
+        return list([price_preds_gbp, sigma_gbp])
 
 
