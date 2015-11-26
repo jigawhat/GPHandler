@@ -21,4 +21,5 @@ host = '146.169.45.142'
 gph = GPHandler()
 p = RabbitPuller(username, password, host, gp_queue_name, gph.handle_request)
 
+print("Awaiting GP Requests...")
 p.start()

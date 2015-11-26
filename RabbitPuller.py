@@ -7,7 +7,7 @@ import json
 
 # Timeout for resending messages on the queue
 # If no ack is recieved from a worker
-timeout = 580 # TODO: change based on average times 
+timeout = 0 # TODO: change based on average times 
 
 class RabbitPuller(object):
     def __init__(self, username, password, host, queue_name, process_request):
@@ -27,7 +27,7 @@ class RabbitPuller(object):
         self.channel.basic_consume(self.on_request, queue=queue_name)
 
     def on_request(self, ch, method, props, body):
-        # Responce from processing request
+        # Response from processing request
         response = self.process_function(json.loads(body))
 
         # Deals with reply to RabbitMQ return queue

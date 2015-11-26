@@ -11,9 +11,11 @@
                 "F": 0.4,
                 "L": 0.285
             },
+            "price_scaling_factor": 0.00001,
+            "price_zero_val": 10000,
             "variance_multiplier": 0.5,
-            "min_samples_per_group": 100,
-            "max_samples_per_group": 800,
+            "min_n_samples": 10,
+            "max_n_samples": 5000,
             "n_restarts_optimizer": 4,
             "normalize_y": 1,
             "RBF_length_scale_bounds": [ 32.0, 1000.0 ],

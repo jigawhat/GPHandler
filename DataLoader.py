@@ -1,3 +1,4 @@
+import re
 import pandas as pd
 
 class DataLoader(object):
@@ -8,21 +9,22 @@ class DataLoader(object):
 
     # Loads a csv dataset, assuming it has labeled columns date, price, estate_type
     def load_dataset(self, csv_path):
-        pp_london = pd.read_csv(csv_path, parse_dates=['date'], index_col=['date'])
-        pp_london = pp_london[(pp_london['estate_type'].str[:] != "U")]
-        pp_london['price'] = pp_london['price'].astype(int)
+        dataset = pd.read_csv(csv_path, parse_dates=['date'], index_col=['date'])
+        dataset = dataset[(dataset['estate_type'].str[:] != "U")]
+        dataset['price'] = dataset['price'].astype(int)
+        return dataset
 
     # Get subset of data for a given area (postcode or co-ordinates string)
     # Assumes data has column 'postcode'
-    def load_data_for_area(data, area):
+    def load_data_for_area(self, data, area):
         # Check if area is a lat_lng_size and not a postcode (first character is a non-letter)
         if(re.compile(r'^[a-zA-Z]').match(area[0]) == None):
-            return load_data_for_lat_lng(data, area)
+            return self.load_data_for_lat_lng(data, area)
         # Return data for the postcode
         return data[(data['postcode'].str[:len(area)] == area)]
 
     # Get subset of data for given lat_lng_size string
-    def load_data_for_lat_lng(data, lat_lng_size):
+    def load_data_for_lat_lng(self, data, lat_lng_size):
         latlng_str = lat_lng_size   .split(" ")
         side_len_metres_over_100 = float(latlng_str[2]) / 100.0
         side_len_lat = lat_100m * side_len_metres_over_100
