@@ -1,22 +1,34 @@
 '''
     Wires components together, and starts running the handler processsing jobs
 '''
+import sys
+import json
 
 from RabbitPuller import RabbitPuller
 from GPHandler import GPHandler
 
-def test(request):
-    print(request)
+# First argument is type of configuration
+if(len(sys.argv) > 1):
+    option = sys.argv[1]
+else:
+    option = "test"
 
-# gpr = GPRequester(ip, port, ...)
+# Load configuration options
+config_file = open('config.json')                       
+config = json.load(config_file)
 
-# ph = PredictionHandler(args , gpr)
+print("Attempting to load configuration option: %s" % option)
+print("Using RabbitMQ server on: %s" % str(config[option]["host"]))
+print("Accessing queue with username: %s" % str(config[option]["username"]))
+print("Using password: %s" % str(config[option]["password"]))
 
-prediction_queue_name = 'prediction_request_queue'
-gp_queue_name = 'gp_request_queue'
-username = 'aew13'
-password = 'bubbler420'
-host = '146.169.45.142'
+
+prediction_queue_name = str(config["queue_names"]["pred"])
+gp_queue_name = str(config["queue_names"]["gp"])
+
+username = str(config[option]["username"])
+password = str(config[option]["password"])
+host = str(config[option]["host"])
 
 gph = GPHandler()
 p = RabbitPuller(username, password, host, gp_queue_name, gph.handle_request)
