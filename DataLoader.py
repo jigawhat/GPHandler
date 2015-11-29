@@ -10,13 +10,13 @@ class DataLoader(object):
 
     # Initialise by loading in postcode co-ordinates csv (used for area search)
     def __init__(self):
+
         config_file = open('data_config.json')                       
         config = json.load(config_file)
-
         data_file = str(config["coord_data"][data_source]) 
 
-        print("Using data source: %s" % data_source)
-        print("Loading data from: %s" % data_file)
+        print("Using coord data source: %s" % data_source)
+        print("Loading coord data from: %s" % data_file)
         
         self.coord_data = pd.read_csv(data_file)
 
