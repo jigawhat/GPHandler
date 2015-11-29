@@ -12,7 +12,7 @@ class GPHandler(object):
     def __init__(self):
         self.loader = DataLoader()
         self.datasets = {}
-        self.datasets["landreg"] = self.loader.load_dataset("london-data.csv")
+        self.datasets["landreg"] = self.loader.load_dataset("http://www.doc.ic.ac.uk/project/2015/362/g1536201/aew13/GPHandler/london-data.csv")
     
     def handle_request(self, request):
         self.check_request(request)

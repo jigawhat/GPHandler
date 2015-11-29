@@ -5,7 +5,7 @@ class DataLoader(object):
 
     # Initialise by loading in postcode co-ordinates csv (used for area search)
     def __init__(self):
-        self.coord_data = pd.read_csv('full-postcode-coords.csv')
+        self.coord_data = pd.read_csv('http://www.doc.ic.ac.uk/project/2015/362/g1536201/aew13/GPHandler/full-postcode-coords.csv')
 
     # Loads a csv dataset, assuming it has labeled columns date, price, estate_type
     def load_dataset(self, csv_path):
