@@ -1,0 +1,16 @@
+{
+    "queue_names" : {
+        "gp" : "gp_request_queue",
+        "pred" : "prediction_request_queue"
+    },
+    "test" : {
+        "host": "localhost",
+        "username": "guest",
+        "password": "guest"
+    },
+    "release" : {
+        "host": "146.169.45.142",
+        "username": "aew13",
+        "password": "bubbler420"
+    }
+}
