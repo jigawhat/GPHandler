@@ -6,13 +6,24 @@ from DataLoader import DataLoader
 from DataFormatter import DataFormatter
 
 model_save_path = "modelsaves/"
+# Use "local" or "remote" data source
+data_source = "remote" 
 
 class GPHandler(object):
 
     def __init__(self):
         self.loader = DataLoader()
         self.datasets = {}
-        self.datasets["landreg"] = self.loader.load_dataset("london-data.csv")
+
+        config_file = open('data_config.json')                       
+        config = json.load(config_file)
+
+        data_file = str(config["london_data"][data_source]) 
+
+        print("Using London data source: %s" % data_source)
+        print("Loading London data from: %s" % data_file)
+
+        self.datasets["landreg"] = self.loader.load_dataset(data_file)
     
     def handle_request(self, request):
         self.check_request(request)

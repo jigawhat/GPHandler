@@ -1,11 +1,24 @@
+import json
+
 import re
 import pandas as pd
+
+# Use "local" or "remote" data source
+data_source = "remote" 
 
 class DataLoader(object):
 
     # Initialise by loading in postcode co-ordinates csv (used for area search)
     def __init__(self):
-        self.coord_data = pd.read_csv('full-postcode-coords.csv')
+
+        config_file = open('data_config.json')                       
+        config = json.load(config_file)
+        data_file = str(config["coord_data"][data_source]) 
+
+        print("Using coord data source: %s" % data_source)
+        print("Loading coord data from: %s" % data_file)
+        
+        self.coord_data = pd.read_csv(data_file)
 
     # Loads a csv dataset, assuming it has labeled columns date, price, estate_type
     def load_dataset(self, csv_path):
