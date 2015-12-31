@@ -1,10 +1,10 @@
 {
     "coord_data" : {
         "remote" : "http://www.doc.ic.ac.uk/project/2015/362/g1536201/aew13/GPHandler/full-postcode-coords.csv",
-        "local" : "full-postcode-coords.csv"
+        "local" : "full_postcode_coords.csv"
     },
     "london_data" : {
         "remote" : "http://www.doc.ic.ac.uk/project/2015/362/g1536201/aew13/GPHandler/london-data.csv",
-        "local" : "london-data.csv"
+        "local" : "landreg_data.csv"
     }
 }

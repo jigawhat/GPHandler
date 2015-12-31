@@ -33,5 +33,7 @@ host = str(config[option]["host"])
 gph = GPHandler()
 p = RabbitPuller(username, password, host, gp_queue_name, gph.handle_request)
 
-print("Awaiting GP Requests...")
+sys.stdout.write("Awaiting GP Requests.                             ")
+sys.stdout.flush()
+
 p.start()

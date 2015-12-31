@@ -3,8 +3,8 @@ results.txt
 run.py
 modelsaves/
 predsaves/
-full-postcode-coords.csv
-london-data.csv
+full_postcode_coords.csv
+landreg_data.csv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -3,39 +3,54 @@ import Utils
 from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.gaussian_process.kernels import RBF, RationalQuadratic, WhiteKernel
 
+"""
+    Wrapper for GaussianProcessRegressor
+    
+    This class allows custom X, y formatting to be paired with a gaussian process,
+    so that we can use a gaussian process model (GPModel) instance on externally
+    formatted data (e.g., a dataframe), and the data will be automagically converted
+    into and out of GaussianProcessRegressor format when we call fit() or predict()
+    (Data is converted using the formatter object we supply in the constructor)
+"""
+
 class GPModel(object):
 
-    def __init__(self, X, y, params, data_formatter):
-        self.formatter = data_formatter
-        variance = np.var(y)
+    def __init__(self, formatter):
+        self.formatter = formatter
+
+    # Fit model for given params and data
+    def fit(self, p, X_y_external):
+        # Format training data
+        X, y, variance = self.formatter.format_X_y(X_y_external)
         n = len(y)
-        print("Creating GP Model, n = " + str(n))
-
-        # TODO add shuffling if dataset too large
-        # TODO add multiple kernel combinations as model parameters
-
-        # Create gaussian process and fit to data
-        kernel = 5.82**2 * RBF(length_scale=32.0, length_scale_bounds=tuple(params["RBF_length_scale_bounds"])) + \
-                0.319**2 * RationalQuadratic(alpha=0.1, alpha_bounds=tuple(params["rational_quadratic_alpha_bounds"]),
-                    length_scale=0.1, length_scale_bounds=tuple(params["rational_quadratic_length_scale_bounds"]))
+        # Create gp kernel using params
+        kernel = 5.82**2 * RBF(length_scale=float(p["rbf_ls_init"]),
+                               length_scale_bounds=(float(p["rbf_ls_lb"]), float(p["rbf_ls_ub"])))
+        if("rq_a_init" in p):
+            kernel = kernel + 3.05**2 * RationalQuadratic(
+                    alpha=float(p["rq_a_init"]),
+                    alpha_bounds=(float(p["rq_a_lb"]), float(p["rq_a_ub"])),
+                    length_scale=float(p["rq_ls_init"]),
+                    length_scale_bounds=(float(p["rq_ls_lb"]), float(p["rq_ls_ub"])))
+        if("wk_var_mult_lb" in p):
+            kernel = kernel + WhiteKernel(noise_level=0.5 * variance,
+                                          noise_level_bounds=(float(p["wk_var_mult_lb"]), float(p["wk_var_mult_ub"])))
+        # Fit gaussian process
         before = Utils.timestamp()
-        self.gpr = GaussianProcessRegressor(kernel=kernel, alpha=variance * params["variance_multiplier"],
-            n_restarts_optimizer=int(params["n_restarts_optimizer"]), normalize_y=(int(params["normalize_y"]) == 1))
+        self.gpr = GaussianProcessRegressor(kernel=kernel, alpha=variance * float(p["alpha_var_multiplier"]),
+            n_restarts_optimizer=int(p["n_restarts_optimiser"]), normalize_y=True)
         self.gpr.fit(X, y)
-
         # Log the time it took
         time_taken = Utils.timestamp() - before
         info_line = "GP ~ n = " + str(n) + ", mins: " + str(time_taken / 60.0) + ", K = " + str(self.gpr.kernel_) + "\n"
         with open("results.txt", "a") as resfile:
             resfile.write(info_line)
-        print("Created.")
+        return str(self.gpr.kernel_)
 
-    def predict(self, X):
-        return self.gpr.predict(X, return_std=True)
-
-    def predict_and_format(self, X_external_format):
-        X = self.formatter.format_input_X(X_external_format)
-        y, sigma = self.predict(X)
-        return self.formatter.format_output_y_sigma(y, sigma)
+    # Format external input X values, predicts y values, returns formatted output
+    def predict(self, X_external):
+        X = self.formatter.format_X(X_external)
+        y, sigma = self.gpr.predict(X, return_std=True)
+        return self.formatter.format_y_sigma(y, sigma)
 
 
