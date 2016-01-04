@@ -34,7 +34,8 @@ class GPModel(object):
                     length_scale_bounds=(float(p["rq_ls_lb"]), float(p["rq_ls_ub"])))
         if("wk_var_mult_lb" in p):
             kernel = kernel + WhiteKernel(noise_level=0.5 * variance,
-                                          noise_level_bounds=(float(p["wk_var_mult_lb"]), float(p["wk_var_mult_ub"])))
+                                          noise_level_bounds=(float(p["wk_var_mult_lb"]) * variance,
+                                                              float(p["wk_var_mult_ub"]) * variance))
         # Fit gaussian process
         before = Utils.timestamp()
         self.gpr = GaussianProcessRegressor(kernel=kernel, alpha=variance * float(p["alpha_var_multiplier"]),

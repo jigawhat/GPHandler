@@ -25,16 +25,11 @@ class LandRegDataFormatter(DataFormatter):
         if(len(df) < 1):
             return None
 
-        # Return variance for 2003 onwards data
-        y_2003 = df[df.index > np.datetime64('2003-01-01T00:00:00Z')]['price'].values.ravel()
-        y_2003 = (map(lambda x: math.log(x, self.logadj), y_2003) if self.logadj else y_2003) * self.price_scaling_factor
-        post_2003_variance = np.var(y_2003)
-
         # If dataframe contains more than 2000 entries, select a random sample of them,
         # but without removing any entries for rare property/estate types combinations
         max_datapoints = 1100 # Max datapoints for each property/estate type combination
         while(len(df) > 2000 and max_datapoints > 0):
-            max_datapoints -= 100
+            max_datapoints -= 50
             type_counts = df.groupby(('estate_type', 'property_type')).size()
             type_indexes = type_counts.index.values
             partitions = []
@@ -46,33 +41,46 @@ class LandRegDataFormatter(DataFormatter):
                 partitions.append(partition)
             df = pd.concat(partitions)
 
+        # Return variance for 2003 onwards data
+        y_2003 = df[df.index > np.datetime64('2003-01-01T00:00:00Z')]['price'].values.ravel()
+        y_2003 = y_2003 * self.price_scaling_factor
+        if self.logadj:
+            y_2003 = np.vectorize(lambda x: math.log(x, self.logadj))(y_2003)
+        post_2003_variance = np.var(y_2003)
+
         # Format dataframe into X, y input
         dates = np.atleast_2d(map(datetime64_to_tinynoised_lontime, df.index.values)).T
-        p123 = map(self.map_property_type, df['property_type'])
-        e1 = np.atleast_2d(map(self.map_estate_type, df['estate_type'])).T
+        p123 = map(lambda x: self.pt_map[x], df['property_type'])
+        e1 = np.atleast_2d(map(lambda x: self.et_map[x], df['estate_type'])).T
         X = np.concatenate((dates, p123, e1), axis=1)
         y = df['price'].values.ravel()
-        y = (map(lambda x: math.log(x, self.logadj), y) if self.logadj else y) * self.price_scaling_factor
+        y = y * self.price_scaling_factor
+        if self.logadj:
+            y = np.vectorize(lambda x: math.log(x, self.logadj))(y)
 
         return X, y, post_2003_variance
 
     # Format input X
-    def format_X(self, X):
-        years_range = X["end_date"] - X["start_date"]
-        dates = np.atleast_2d([X["start_date"] + x for x in np.arange(0, years_range, 1.0/12)]).T
-        return [[ date[0], self.pt_map[X["property_type"]],
-                           self.et_map[X["estate_type"]]] for date in dates]
+    def format_X(self, params):
+        X = []
+        if "date_range" in params:
+            start, stop, step_fraction = map(float, params["date_range"])
+            X = np.linspace(start, stop, ((stop-start)*step_fraction) + 1)
+        else:
+            X = map(float, params["dates"])
+        X = np.atleast_2d(X).T
+        pt_arr = np.atleast_2d([self.pt_map[params["property_type"]]] * len(X))
+        et_arr = np.atleast_2d([self.et_map[params["estate_type"]]] * len(X)).T
+        return np.concatenate((X, pt_arr, et_arr), axis=1)
 
     # Correct and format output prices
     def format_y_sigma(self, y, sigma):
-        price_preds_gbp = map(lambda x: int(x), (y / self.price_scaling_factor))
-        sigma_gbp = map(lambda x: int(x), sigma / self.price_scaling_factor)
-        return list([price_preds_gbp, sigma_gbp])
-
-    def map_property_type(self, p_type):
-        return self.pt_map[p_type]
-    def map_estate_type(self, e_type):
-        return self.et_map[e_type]
+        if self.logadj:
+            y = self.logadj ** y
+            sigma = self.logadj ** sigma
+        price_preds_gbp = np.vectorize(lambda x: int(x))(y / self.price_scaling_factor)
+        sigma_gbp = np.vectorize(lambda x: int(x))(sigma / self.price_scaling_factor)
+        return price_preds_gbp, sigma_gbp
 
 
 

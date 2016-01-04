@@ -1,6 +1,7 @@
 # Log/scripts/data stuff
 results.txt
-run.py
+zoopla/
+graphs/
 modelsaves/
 predsaves/
 full_postcode_coords.csv
