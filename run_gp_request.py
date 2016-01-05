@@ -12,20 +12,19 @@ timeout = 0
 
 request = {
     'dataset': 'landreg',
-    'id': 3247,
+    'id': "SW7",
     # The params dictionary below is only used for testing different params -
-    # it's not needed for getting predictions for an area
+    # it's not needed for generating gps for an area
     # 'params': {
     #     'start_date': 1990,
-    #     'end_date': 2013,
-    #     'filename_suffix': "_test_1",
+    #     'end_date': 2016,
+    #     'filename_suffix': "_test_04_3.0",
     #     'alpha_var_multiplier': 0.0,
     #     'dataset': 'landreg',
     #     'id': 3247.0,
     #     'lat': 51.53476,
     #     'lng': -0.18132,
-    #     'logadj': 1.5,
-    #     'n': 1097.0,
+    #     'logadj': 3.0,
     #     'n_restarts_optimiser': 3.0,
     #     'rbf_ls_init': 70.0,
     #     'rbf_ls_lb': 0.1,

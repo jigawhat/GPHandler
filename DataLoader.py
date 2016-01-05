@@ -19,10 +19,10 @@ class DataLoader(object):
         }
 
         print("Using data source: %s" % data_source)
-        config_file = open('data_config.json')                       
-        config = json.load(config_file)
-        coord_data_file = str(config["coord_data"][data_source])
-        landreg_data_file = str(config["landreg_data"][data_source])
+        data_config_file = open('data_config.json')                       
+        data_config = json.load(data_config_file)
+        coord_data_file = str(data_config["coord_data"][data_source])
+        landreg_data_file = str(data_config["landreg_data"][data_source])
 
         print("Loading coord data from: %s" % coord_data_file)
         self.coord_data = pd.read_csv(coord_data_file)
