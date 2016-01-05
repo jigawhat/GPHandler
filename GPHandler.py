@@ -11,7 +11,7 @@ model_save_path = "modelsaves/"
 class GPHandler(object):
 
     def __init__(self):
-        self.loader = DataLoader()
+        self.loader = DataLoader(verbose=False)
     
     # Handle request (make sure it's a GP request)
     def handle_request(self, request):

@@ -12,25 +12,26 @@ lng_100m = 0.001450
 class DataLoader(object):
 
     # Initialise by loading in postcode co-ordinates csv (used for area search)
-    def __init__(self):
+    def __init__(self, verbose=True):
+        self.verbose = verbose
         self.datasets = {}
         self.area_dbs = {
             "landreg": {}
         }
 
-        print("Using data source: %s" % data_source)
+        self.v_print("Using data source: %s" % data_source)
         data_config_file = open('data_config.json')                       
         data_config = json.load(data_config_file)
         coord_data_file = str(data_config["coord_data"][data_source])
         landreg_data_file = str(data_config["landreg_data"][data_source])
 
-        print("Loading coord data from: %s" % coord_data_file)
+        self.v_print("Loading coord data from: %s" % coord_data_file)
         self.coord_data = pd.read_csv(coord_data_file)
 
-        print("Loading London Land Registry data from: %s" % landreg_data_file)
+        self.v_print("Loading London Land Registry data from: %s" % landreg_data_file)
         self.datasets["landreg"] = self.load_dataset(landreg_data_file)
 
-        print("Loading model parameters databases")
+        self.v_print("Loading model parameters databases")
         self.area_dbs["landreg"]["grid_squares"] = pd.read_csv("grid_squares_db.csv", index_col="id")
         self.area_dbs["landreg"]["postcode_areas"] = pd.read_csv("postcode_areas_db.csv", index_col="postcode")
 
@@ -99,5 +100,10 @@ class DataLoader(object):
     # Return whether the given area id is a postcode (otherwise it's a grid square id)
     def is_postcode(self, aid):
         return str(aid)[0].isalpha()
+
+    # Prints text if self.verbose == True
+    def v_print(self, text):
+        if self.verbose:
+            print text
 
 
