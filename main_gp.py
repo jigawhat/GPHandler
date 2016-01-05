@@ -13,14 +13,17 @@ if(len(sys.argv) > 1):
 else:
     option = "test"
 
+silent = True if len(sys.argv) > 2 and sys.argv[2] == "silent" else False
+
 # Load configuration options
 config_file = open('config.json')                       
 config = json.load(config_file)
 
-print("Attempting to load configuration option: %s" % option)
-print("Using RabbitMQ server on: %s" % str(config[option]["host"]))
-print("Accessing queue with username: %s" % str(config[option]["username"]))
-print("Using password: %s" % str(config[option]["password"]))
+if not silent:
+    print("Attempting to load configuration option: %s" % option)
+    print("Using RabbitMQ server on: %s" % str(config[option]["host"]))
+    print("Accessing queue with username: %s" % str(config[option]["username"]))
+    print("Using password: %s" % str(config[option]["password"]))
 
 
 prediction_queue_name = str(config["queue_names"]["pred"])
