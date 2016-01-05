@@ -14,15 +14,33 @@ loader = DataLoader()
 def get_gp_model(dataset, aid, filename_suffix):
     return joblib.load(model_save_path + dataset + "/" + aid + filename_suffix + "/gp_model.pkl")
 
-def get_predictions(request):
-    filename_suffix = request["filename_suffix"] if "filename_suffix" in request else ""
-    gp_model = get_gp_model(request["dataset"], request["id"], filename_suffix)
-    return gp_model.predict(request), gp_model.gpr.log_marginal_likelihood_value_, gp_model.gpr.kernel_
+# def get_predictions(gp_model, request):
+#     filename_suffix = request["filename_suffix"] if "filename_suffix" in request else ""
+#     gp_model = get_gp_model(request["dataset"], request["id"], filename_suffix)
+#     return gp_model.predict(request)
 
-def plot_predictions(request, price_preds, sigmas, ll, kernel):
+form = [("F", "D", "Freehold Detached", 'r', '--', 2, 'x'),
+        ("F", "F", "Freehold Flats", 'g', '--', 2, 'o'),
+        ("F", "S", "Freehold Semi-detached", 'c', '--', 2, 'x'),
+        ("F", "T", "Freehold Terraces", 'b', '--', 2, 'x'),
+        ("L", "D", "Lease Detached", 'r', '-', 1, 'o'),
+        ("L", "F", "Lease Flats", 'g', '-', 1, '+'),
+        ("L", "S", "Lease Semi-detached", 'c', '-', 1, 'o'),
+        ("L", "T", "Lease Terraces", 'b', '-', 1, 'o')]
+
+def predict_and_plot_all(dataset, aid, fn_suffix):
+
+    gp_model = get_gp_model(dataset, aid, fn_suffix)
+    price_preds, sigmas = [], []
+
     fig = plt.figure()
     fig.set_size_inches(20, 12, forward=False)
-    aid = request["id"]
+    plots = []
+
+    for typ in form:
+        et, pt = typ[:2]
+
+    
 
     # Load datapoints to plot
     area_data = loader.load_data_for_aid("landreg", aid)

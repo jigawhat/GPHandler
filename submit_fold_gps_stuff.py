@@ -1,3 +1,10 @@
+import sys
+import json
+import joblib
+import numpy as np
+import matplotlib.pyplot as plt
+from DataLoader import DataLoader
+from Utils import datetime64_to_lontime
 from GPRequester import submit_gp_request
 
 postcode_prefixes = [  'E14', 'SW19', 'SW11', 'SW18', 'E17', 'SW6', 'SW16', 'SW17', 'N1',
@@ -12,7 +19,7 @@ postcode_prefixes = [  'E14', 'SW19', 'SW11', 'SW18', 'E17', 'SW6', 'SW16', 'SW1
                        'NW7', 'SW1V', 'N3', 'N6', 'N19', 'SE20', 'N2', 'SW14', 'E18',
                        'SW5', 'E1W', 'E12', 'SW13', 'N18', 'E9', 'SE27', 'SE8', 'NW5',
                        'SE24', 'SE14', 'W10', 'N20', 'SW1P', 'SE2', 'SE21', 'SE7', 'SE11',
-                       'SW1X', 'SE17', 'EC1V', 'W1H', 'SW1W', 'EC2Y', 'W1U', 'nan', 'WC1H',
+                       'SW1X', 'SE17', 'EC1V', 'W1H', 'SW1W', 'EC2Y', 'W1U', 'WC1H',
                        'EC1R', 'W1K', 'W1W', 'W1G', 'W1T', 'WC1X', 'EC1M', 'WC1N', 'EC1Y',
                        'W1J', 'EC1A', 'EC2A', 'WC2H', 'EC1N', 'SW1H', 'EC4V', 'WC2B',
                        'WC2N', 'SW1E', 'WC1B', 'W1F', 'EC4A', 'WC1E', 'SW1Y', 'WC2E',
@@ -22,20 +29,45 @@ postcode_prefixes = [  'E14', 'SW19', 'SW11', 'SW18', 'E17', 'SW6', 'SW16', 'SW1
                         'W1X', 'EC2V', 'W1V', 'W1R', 'W1C', 'EC4N', 'EC3M', 'EN5', 'TW10',
                         'IG1', 'EN4', 'HA5'  ]
 
+first_5 = postcode_prefixes[:5]
 
-for i in range(0, 5425):
-    request = {
-        "dataset": "landreg",
-        "id": str(i)
-    }
-    submit_gp_request(request)
-
-for pc in postcode_prefixes:
+for pc in first_5:
     request = {
         "dataset": "landreg",
         "id": pc
     }
     submit_gp_request(request)
 
+request = {
+    'dataset': 'landreg',
+    'id': "SW7",
+    # The params dictionary below is only used for testing different params -
+    # it's not needed for generating gps for an area
+    # 'params': {
+    #     'start_date': 1990,
+    #     'end_date': 2016,
+    #     'filename_suffix': "_test_04_3.0",
+    #     'alpha_var_multiplier': 0.0,
+    #     'dataset': 'landreg',
+    #     'id': 3247.0,
+    #     'lat': 51.53476,
+    #     'lng': -0.18132,
+    #     'logadj': 3.0,
+    #     'n_restarts_optimiser': 3.0,
+    #     'rbf_ls_init': 70.0,
+    #     'rbf_ls_lb': 0.1,
+    #     'rbf_ls_ub': 1000.0,
+    #     'rq_a_init': 0.01,
+    #     'rq_a_lb': 0.01,
+    #     'rq_a_ub': 100.0,
+    #     'rq_ls_init': 0.1,
+    #     'rq_ls_lb': 0.1,
+    #     'rq_ls_ub': 100.0,
+    #     'size': 357.0,
+    #     'wk_var_mult_lb': 0.49,
+    #     'wk_var_mult_ub': 0.51
+    # }
+}
 
 
+### todo: Optimise area gp
