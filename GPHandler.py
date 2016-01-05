@@ -45,7 +45,7 @@ class GPHandler(object):
         final_kernel = gp_model.gpr.kernel_
 
         # Store gp model
-        filename_suffix = req["params"]["filename_suffix"] if "params" in req else ""
+        filename_suffix = params["filename_suffix"] if "filename_suffix" in params else ""
         Utils.create_folder(model_save_path)
         Utils.create_folder(model_save_path + dataset)
         Utils.create_folder(model_save_path + dataset + "/" + str(aid) + filename_suffix, overwrite=True)
