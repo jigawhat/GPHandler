@@ -53,7 +53,7 @@ class LandRegDataFormatter(DataFormatter):
         y = df['price'].values.ravel()
         self.price_scaling_factor = 0.3 / np.mean(y)
         if self.logadj:
-            self.price_scaling_factor *= 4
+            self.price_scaling_factor *= 10
         y = y * self.price_scaling_factor
         if self.logadj:
             y = np.vectorize(lambda x: math.log(x, self.logadj))(y)
