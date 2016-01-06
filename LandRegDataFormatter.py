@@ -8,7 +8,7 @@ class LandRegDataFormatter(DataFormatter):
 
     def __init__(self, params):
         self.logadj = float(params['logadj'])
-        self.price_scaling_factor = 1e-5
+        self.price_scaling_factor = 1e-6
         self.pt_map = {
             "F": [0, 0, 0],
             "T": [1, 0, 0],
@@ -25,9 +25,13 @@ class LandRegDataFormatter(DataFormatter):
         if(len(df) < 1):
             return None
 
-        # If dataframe contains more than 2000 entries, select a random sample of them,
-        # but without removing any entries for rare property/estate types combinations
-        max_datapoints = 1100 # Max datapoints for each property/estate type combination
+        # If dataframe contains more than 2000 entries, remove excess data from those
+        # property/estate type combinations with the most entries (thus preserving the
+        # data for rarer property/estate type combinations). Starting with a max number
+        # of datapoints for each type combination of 1050, take random samples of these
+        # bloated type combinations, lowering the max datapoints by 50 each
+        # iteration, until we have less than 2000 datapoints overall
+        max_datapoints = 1100
         while(len(df) > 2000 and max_datapoints > 0):
             max_datapoints -= 50
             type_counts = df.groupby(('estate_type', 'property_type')).size()
@@ -54,6 +58,7 @@ class LandRegDataFormatter(DataFormatter):
         e1 = np.atleast_2d(map(lambda x: self.et_map[x], df['estate_type'])).T
         X = np.concatenate((dates, p123, e1), axis=1)
         y = df['price'].values.ravel()
+        self.price_scaling_factor = 0.3 / np.mean(y)
         y = y * self.price_scaling_factor
         if self.logadj:
             y = np.vectorize(lambda x: math.log(x, self.logadj))(y)

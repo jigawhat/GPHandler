@@ -64,7 +64,7 @@ def predict_and_plot_all(dataset, aid, fn_suffix):
         plt.fill(np.concatenate([t, t[::-1]]),
                  np.concatenate([(price_pred - 1.9600 * sigma),
                                  (price_pred + 1.9600 * sigma)[::-1]]),
-                 alpha=.25, fc=col, ec='None', label='95% confidence interval')
+                 alpha=.2, fc=col, ec='None', label='95% confidence interval')
 
     # Draw graph
     plt.legend(handles=plots, loc="upper left")

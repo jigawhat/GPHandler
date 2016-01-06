@@ -23,7 +23,6 @@ class GPHandler(object):
 
     # Handle a GP request
     def handle_gp_request(self, req):
-        # 
         dataset = str(req["dataset"])
         aid = str(req["id"])
 
@@ -35,8 +34,11 @@ class GPHandler(object):
         sys.stdout.write("\rProcessing GP request for area id = " + str(aid) + ", in dataset " + dataset + "...")
         sys.stdout.flush()
 
-        # Get training data and params
-        params = req["params"] if "params" in req else self.loader.load_params_for_aid(dataset, aid)
+        # Get training params and data
+        params = self.loader.load_params_for_aid(dataset, aid)
+        if "params" in req:
+            for param in req["params"]:
+                params[param] = req["params"][param]
         train_data = self.loader.load_data_for_params(dataset, aid, params)
         
         # Create and fit gp model
