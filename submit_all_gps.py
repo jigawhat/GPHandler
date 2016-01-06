@@ -1,4 +1,4 @@
-from PredictionPlotter import predict_and_plot_all
+from GPRequester import submit_gp_request
 
 postcode_prefixes = [  'E14', 'SW19', 'SW11', 'SW18', 'E17', 'SW6', 'SW16', 'SW17', 'N1',
                        'SW15', 'SE1', 'NW6', 'W2', 'NW3', 'E4', 'W4', 'SE18', 'NW10', 'E6',
@@ -22,8 +22,19 @@ postcode_prefixes = [  'E14', 'SW19', 'SW11', 'SW18', 'E17', 'SW6', 'SW16', 'SW1
                         'W1X', 'EC2V', 'W1V', 'W1R', 'W1C', 'EC4N', 'EC3M', 'EN5', 'TW10',
                         'IG1', 'EN4', 'HA5'  ]
 
-for i in range(2500, 2700):
-    predict_and_plot_all("landreg", i, "")
+for aid in range(0, 5426):
+    request = {
+        "dataset": "landreg",
+        "id": str(aid)
+    }
+    submit_gp_request(request)
 
-for pc in postcode_prefixes[:10]:
-    predict_and_plot_all("landreg", pc, "")
+for pc in postcode_prefixes:
+    request = {
+        "dataset": "landreg",
+        "id": pc
+    }
+    submit_gp_request(request)
+
+
+

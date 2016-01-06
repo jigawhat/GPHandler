@@ -4,9 +4,6 @@ from GPRequester import submit_gp_request
 for aid in [2506, 2513, 2516, 2519, 2520]:
     request = {
         "dataset": "landreg",
-        "id": str(aid),
-        "params": {
-            "logadj": 2.0
-        }
+        "id": str(aid)
     }
     submit_gp_request(request)
