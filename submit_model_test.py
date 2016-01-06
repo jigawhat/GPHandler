@@ -3,14 +3,17 @@ import matplotlib.pyplot as plt
 from DataLoader import DataLoader
 from GPRequester import submit_gp_request
 
+aid = 10
+fn_suffix = "_logadj_test"
+
 request = {
     'dataset': 'landreg',
-    'id': 7,
+    'id': aid,
     'params': {
         'logadj': 1.2,
-        'filename_suffix': "_logadj_test"
+        'filename_suffix': fn_suffix
     }
 }
+
 submit_gp_request(request)
-
-
+predict_and_plot_all("landreg", aid, fn_suffix)

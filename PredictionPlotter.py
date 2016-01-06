@@ -7,9 +7,6 @@ import matplotlib.pyplot as plt
 from DataLoader import DataLoader
 from Utils import datetime64_to_lontime
 
-area_id = sys.argv[1] if(len(sys.argv) > 1) else "SW5"
-fn_suffix = sys.argv[2] if(len(sys.argv) > 2) else ""
-
 model_save_path = "modelsaves/"
 loader = DataLoader()
 
