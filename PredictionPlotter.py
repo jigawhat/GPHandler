@@ -34,7 +34,8 @@ def predict_and_plot_all(dataset, aid, fn_suffix):
     area_data = loader.load_data_for_aid(dataset, aid)
 
     fig = plt.figure()
-    fig.set_size_inches(19, 11)
+    fig.set_size_inches(18, 11)
+    fig.subplots_adjust(left=0.06, bottom=0.03, right=0.98, top=0.97)
     plots = []
     date_range = [1995, 2019, 12]
     request = {
@@ -69,18 +70,14 @@ def predict_and_plot_all(dataset, aid, fn_suffix):
         plt.fill(np.concatenate([t, t[::-1]]),
                  np.concatenate([(price_pred - 1.9600 * sigma),
                                  (price_pred + 1.9600 * sigma)[::-1]]),
-                 alpha=.2, fc=col, ec='None', label='95% confidence interval')
+                 alpha=.15, fc=col, ec='None', label='95% confidence interval')
 
     # Draw graph
-    plt.legend(handles=plots, loc="upper left")
+    plt.legend(handles=plots, loc="upper left", fontsize=10)
     plt.title("Price vs. Time")
     plt.ylabel('Price')
     fig.savefig('graphs/p_vs_t_' + str(aid) + fn_suffix + ", " + \
                 str(round(gp_model.gpr.log_marginal_likelihood_value_)) + ", " + str(gp_model.gpr.kernel_) + "_.png")
     #plt.show()
     plt.close('all')
-
-
-predict_and_plot_all("landreg", 2500, "")
-
 
