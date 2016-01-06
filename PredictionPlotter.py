@@ -29,7 +29,7 @@ def predict_and_plot_all(dataset, aid, fn_suffix):
     area_data = loader.load_data_for_aid(dataset, aid)
 
     fig = plt.figure()
-    fig.set_size_inches(20, 12, forward=False)
+    fig.set_size_inches(19, 11)
     plots = []
     date_range = [1995, 2019, 12]
     request = {
