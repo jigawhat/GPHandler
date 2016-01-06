@@ -73,6 +73,7 @@ def predict_and_plot_all(dataset, aid, fn_suffix):
     fig.savefig('graphs/p_vs_t_' + str(aid) + fn_suffix + ", " + \
                 str(round(gp_model.gpr.log_marginal_likelihood_value_)) + ", " + str(gp_model.gpr.kernel_) + "_.png")
     #plt.show()
+    plt.close('all')
 
 
 predict_and_plot_all("landreg", 2500, "")
