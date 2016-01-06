@@ -1,5 +1,7 @@
 import sys
+import time
 import joblib
+import os.path
 import numpy as np
 import matplotlib.pyplot as plt
 from DataLoader import DataLoader
@@ -12,7 +14,10 @@ model_save_path = "modelsaves/"
 loader = DataLoader()
 
 def get_gp_model(dataset, aid, filename_suffix):
-    return joblib.load(model_save_path + dataset + "/" + str(aid) + filename_suffix + "/gp_model.pkl")
+    path = model_save_path + dataset + "/" + str(aid) + filename_suffix + "/gp_model.pkl"
+    while not os.path.isfile(path):
+        time.sleep(3)
+    return joblib.load(path)
 
 form = [("F", "D", "Freehold Detached", 'r', '--', 2, 'x'),
         ("F", "F", "Freehold Flats", 'g', '--', 2, 'o'),

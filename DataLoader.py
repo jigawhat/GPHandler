@@ -50,7 +50,10 @@ class DataLoader(object):
     # Load params for an area id
     def load_params_for_aid(self, dataset, aid):
         aid, db = self.normalise_area_id_and_get_db_name(aid)
-        return self.area_dbs[dataset][db].loc[aid].to_dict()
+        area_db = self.area_dbs[dataset][db]
+        if aid in area_db.index:
+            return area_db.loc[aid].to_dict()
+        return None
 
     # Load data for given params
     def load_data_for_params(self, dataset, aid, params):

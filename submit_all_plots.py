@@ -12,7 +12,7 @@ postcode_prefixes = [  'E14', 'SW19', 'SW11', 'SW18', 'E17', 'SW6', 'SW16', 'SW1
                        'NW7', 'SW1V', 'N3', 'N6', 'N19', 'SE20', 'N2', 'SW14', 'E18',
                        'SW5', 'E1W', 'E12', 'SW13', 'N18', 'E9', 'SE27', 'SE8', 'NW5',
                        'SE24', 'SE14', 'W10', 'N20', 'SW1P', 'SE2', 'SE21', 'SE7', 'SE11',
-                       'SW1X', 'SE17', 'EC1V', 'W1H', 'SW1W', 'EC2Y', 'W1U', 'nan', 'WC1H',
+                       'SW1X', 'SE17', 'EC1V', 'W1H', 'SW1W', 'EC2Y', 'W1U', 'WC1H',
                        'EC1R', 'W1K', 'W1W', 'W1G', 'W1T', 'WC1X', 'EC1M', 'WC1N', 'EC1Y',
                        'W1J', 'EC1A', 'EC2A', 'WC2H', 'EC1N', 'SW1H', 'EC4V', 'WC2B',
                        'WC2N', 'SW1E', 'WC1B', 'W1F', 'EC4A', 'WC1E', 'SW1Y', 'WC2E',

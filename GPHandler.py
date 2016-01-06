@@ -36,6 +36,8 @@ class GPHandler(object):
 
         # Get training params and data
         params = self.loader.load_params_for_aid(dataset, aid)
+        if params == None:
+            return self.status_response(405, "Unknown area id: " + str(aid))
         if "params" in req:
             for param in req["params"]:
                 params[param] = req["params"][param]
