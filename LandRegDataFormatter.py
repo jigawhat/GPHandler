@@ -45,13 +45,6 @@ class LandRegDataFormatter(DataFormatter):
                 partitions.append(partition)
             df = pd.concat(partitions)
 
-        # Return variance for 2003 onwards data
-        y_2003 = df[df.index > np.datetime64('2003-01-01T00:00:00Z')]['price'].values.ravel()
-        y_2003 = y_2003 * self.price_scaling_factor
-        if self.logadj:
-            y_2003 = np.vectorize(lambda x: math.log(x, self.logadj))(y_2003)
-        post_2003_variance = np.var(y_2003)
-
         # Format dataframe into X, y input
         dates = np.atleast_2d(map(datetime64_to_tinynoised_lontime, df.index.values)).T
         p123 = map(lambda x: self.pt_map[x], df['property_type'])
@@ -62,6 +55,13 @@ class LandRegDataFormatter(DataFormatter):
         y = y * self.price_scaling_factor
         if self.logadj:
             y = np.vectorize(lambda x: math.log(x, self.logadj))(y)
+
+        # Return variance for 2003 onwards data
+        y_2003 = df[df.index > np.datetime64('2003-01-01T00:00:00Z')]['price'].values.ravel()
+        y_2003 = y_2003 * self.price_scaling_factor
+        if self.logadj:
+            y_2003 = np.vectorize(lambda x: math.log(x, self.logadj))(y_2003)
+        post_2003_variance = np.var(y_2003)
 
         return X, y, post_2003_variance
 
