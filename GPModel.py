@@ -24,10 +24,10 @@ class GPModel(object):
         X, y, variance = self.formatter.format_X_y(X_y_external)
         n = len(y)
         # Create gp kernel using params
-        kernel = 5.82**2 * RBF(length_scale=float(p["rbf_ls_init"]),
+        kernel = 3.5**2 * RBF(length_scale=float(p["rbf_ls_init"]),
                                length_scale_bounds=(float(p["rbf_ls_lb"]), float(p["rbf_ls_ub"])))
         if("rq_a_init" in p):
-            kernel = kernel + 3.05**2 * RationalQuadratic(
+            kernel = kernel + 1.05**2 * RationalQuadratic(
                     alpha=float(p["rq_a_init"]),
                     alpha_bounds=(float(p["rq_a_lb"]), float(p["rq_a_ub"])),
                     length_scale=float(p["rq_ls_init"]),
