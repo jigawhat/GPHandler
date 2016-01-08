@@ -1,3 +1,4 @@
+import os
 from GPRequester import submit_gp_request
 
 postcode_prefixes = [  'E14', 'SW19', 'SW11', 'SW18', 'E17', 'SW6', 'SW16', 'SW17', 'N1',
@@ -18,23 +19,94 @@ postcode_prefixes = [  'E14', 'SW19', 'SW11', 'SW18', 'E17', 'SW6', 'SW16', 'SW1
                        'WC2N', 'SW1E', 'WC1B', 'W1F', 'EC4A', 'WC1E', 'SW1Y', 'WC2E',
                        'W1B', 'W1D', 'SW1A', 'EC3N', 'WC1R', 'WC1A', 'EC4Y', 'W1S', 'WC2R',
                        'EC3R', 'EC4R', 'EC4M', 'WC1V', 'EC2M', 'N1C', 'EC3A', 'W1N', 'W1P',
-                        'EC3V', 'TW4', 'W1Y', 'W1M', 'WC2A', 'IG8', 'HA2', 'EN3', 'EC2R',
-                        'W1X', 'EC2V', 'W1V', 'W1R', 'W1C', 'EC4N', 'EC3M', 'EN5', 'TW10',
-                        'IG1', 'EN4', 'HA5'  ]
+                       'EC3V', 'TW4', 'W1Y', 'W1M', 'WC2A', 'IG8', 'HA2', 'EN3', 'EC2R',
+                       'W1X', 'EC2V', 'W1V', 'W1R', 'W1C', 'EC4N', 'EC3M', 'EN5', 'TW10',
+                       'IG1', 'EN4', 'HA5'  ]
+
+model_save_path = "modelsaves/"
+dataset = "landreg"
 
 for aid in range(0, 5426):
-    request = {
-        "dataset": "landreg",
-        "id": str(aid)
-    }
-    submit_gp_request(request)
+    path = model_save_path + dataset + "/" + str(aid) + "/gp_model.pkl"
+    if not os.path.isfile(path):
+        print "Model file missing: " + str(aid)
+        request = {
+            "dataset": "landreg",
+            "id": str(aid)
+        }
+        # submit_gp_request(request)
+
+
+    filename_suffix = "_logadj"
+    path = model_save_path + dataset + "/" + str(aid) + filename_suffix + "/gp_model.pkl"
+    if not os.path.isfile(path):
+        print "Model file missing: " + str(aid) + ", " + filename_suffix
+        request = {
+            "dataset": "landreg",
+            "id": str(aid),
+            "params": {
+                'logadj': 1.2,
+                'filename_suffix': '_logadj'
+            }
+        }
+        # submit_gp_request(request)
+
+
+    filename_suffix = "_logadj_sc4"
+    path = model_save_path + dataset + "/" + str(aid) + filename_suffix + "/gp_model.pkl"
+    if not os.path.isfile(path):
+        print "Model file missing: " + str(aid) + ", " + filename_suffix
+        request = {
+            "dataset": "landreg",
+            "id": str(aid),
+            "params": {
+                'logadj': 1.2,
+                'log_scaling': 4,
+                'filename_suffix': '_logadj_sc4'
+            }
+        }
+        # submit_gp_request(request)
 
 for pc in postcode_prefixes:
-    request = {
-        "dataset": "landreg",
-        "id": pc
-    }
-    submit_gp_request(request)
+    path = model_save_path + dataset + "/" + pc + "/gp_model.pkl"
+    if not os.path.isfile(path):
+        print "Model file missing: " + pc
+        request = {
+            "dataset": "landreg",
+            "id": pc
+        }
+        # submit_gp_request(request)
+
+
+    filename_suffix = "_logadj"
+    path = model_save_path + dataset + "/" + pc + filename_suffix + "/gp_model.pkl"
+    if not os.path.isfile(path):
+        print "Model file missing: " + pc + ", " + filename_suffix
+        request = {
+            "dataset": "landreg",
+            "id": pc,
+            "params": {
+                'logadj': 1.2,
+                'filename_suffix': '_logadj'
+            }
+        }
+        # submit_gp_request(request)
+
+
+    filename_suffix = "_logadj_sc4"
+    path = model_save_path + dataset + "/" + pc + filename_suffix + "/gp_model.pkl"
+    if not os.path.isfile(path):
+        print "Model file missing: " + pc + ", " + filename_suffix
+        request = {
+            "dataset": "landreg",
+            "id": pc,
+            "params": {
+                'logadj': 1.2,
+                'log_scaling': 4,
+                'filename_suffix': '_logadj_sc4'
+            }
+        }
+        # submit_gp_request(request)
 
 
 

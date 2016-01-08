@@ -6,6 +6,12 @@ modelsaves/
 predsaves/
 full_postcode_coords.csv
 landreg_data.csv
+modelsaves_backup/
+*.txt~
+*.py~
+pcs_len.py
+run.py
+commands.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

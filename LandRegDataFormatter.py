@@ -9,6 +9,9 @@ class LandRegDataFormatter(DataFormatter):
     def __init__(self, params):
         self.logadj = float(params['logadj'])
         self.price_scaling_factor = 1e-6
+        self.log_scaling = 10.0
+        if 'log_scaling' in params:
+            self.log_scaling = float(params['log_scaling'])
         self.pt_map = {
             "F": [0, 0, 0],
             "T": [1, 0, 0],
@@ -53,7 +56,7 @@ class LandRegDataFormatter(DataFormatter):
         y = df['price'].values.ravel()
         self.price_scaling_factor = 0.3 / np.mean(y)
         if self.logadj:
-            self.price_scaling_factor *= 10
+            self.price_scaling_factor *= self.log_scaling
         y = y * self.price_scaling_factor
         if self.logadj:
             y = np.vectorize(lambda x: math.log(x, self.logadj))(y)

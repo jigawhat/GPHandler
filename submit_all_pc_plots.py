@@ -23,4 +23,4 @@ postcode_prefixes = [  'E14', 'SW19', 'SW11', 'SW18', 'E17', 'SW6', 'SW16', 'SW1
                         'IG1', 'EN4', 'HA5'  ]
 
 for pc in postcode_prefixes:
-    predict_and_plot_all("landreg", pc, "")
+    predict_and_plot_all("landreg", pc, "_logadj_sc4")
