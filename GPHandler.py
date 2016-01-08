@@ -58,19 +58,19 @@ class GPHandler(object):
         Utils.create_folder(model_save_path + dataset + "/" + str(aid) + filename_suffix, overwrite=True)
         joblib.dump(gp_model, model_save_path + dataset + "/" + str(aid) + filename_suffix + "/gp_model.pkl")
 
+        # Generate predictions json
+
         min_year = 1995
         max_year = 2019
         granularity = float(1)/float(12)
         steps = (max_year-min_year)*12 + 1
         dates = [(min_year + x * granularity) for x in range(0, steps)]
 
-        p_json = []
-
+        p_json = {}
         for pt in property_types:
+            p_json[pt] = {}
             for et in estate_types:
                 request = {
-                    "dataset": "landreg",
-                    "id": aid,
                     "dates": dates,
                     "property_type": pt,
                     "estate_type": et
@@ -78,13 +78,10 @@ class GPHandler(object):
                 price_preds, sigmas = gp_model.predict(request)
                 price_preds = list(price_preds)
                 sigmas = list(sigmas)
-                p_dict = {
-                    "property_type": pt,
-                    "estate_type": et,
+                p_json[pt][et] = {
                     "price_preds": price_preds,
                     "sigmas": sigmas
                 }
-                p_json.append(p_dict)
 
         Utils.create_folder(pred_save_path)
         Utils.create_folder(pred_save_path + dataset)
