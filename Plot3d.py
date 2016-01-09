@@ -28,13 +28,33 @@ form = [("F", "D", "Freehold Detached", 'r', '--', 2, 'x'),
         ("L", "S", "Lease Semi-detached", 'c', '-', 1, 'o'),
         ("L", "T", "Lease Terraces", 'b', '-', 1, 'o')]
 
-def predict_and_plot_all(dataset, aid, fn_suffix):
+def plot_predictions(price_preds, sigmas, dates, datapoints=None):
+    price_preds, sigmas, t = np.asarray(price_preds), np.asarray(sigmas), np.asarray(dates)
+    fig = plt.figure()
+    # fig.set_size_inches(18, 11)
+    fig.subplots_adjust(left=0.06, bottom=0.03, right=0.98, top=0.97)
+    pred_plot, = plt.plot(t, price_preds, color='#000000', ls='-', lw=1, label="Price Prediction")
+
+    if(datapoints != None):
+        d_dates, d_prices = datapoints
+        data_plot, = plt.plot(d_dates, d_prices, 'x', ls='', label="Datapoints")
+
+    plt.fill(np.concatenate([t, t[::-1]]),
+             np.concatenate([(price_preds - 1.9600 * sigmas),
+                             (price_preds + 1.9600 * sigmas)[::-1]]),
+             alpha=.15, fc='#000000', ec='None', label='95% confidence interval')
+    plt.title("Price vs. Time")
+    plt.ylabel('Price')
+    # fig.savefig('graphs/p_vs_t_' + str(aid) + fn_suffix + "_.png")
+    mpld3.show()
+    plt.close('all')
+
+def plot_all(dataset, aid, fn_suffix):
 
     #gp_model = get_gp_model(dataset, aid, fn_suffix)
     predictions = None
     predictions_file = open(pred_save_path + dataset + "/" + str(aid) + fn_suffix + '.json')                       
     predictions = json.load(predictions_file)
-    area_data = loader.load_data_for_aid(dataset, aid)
 
     fig = plt.figure()
     # fig.set_size_inches(18, 11)
@@ -86,5 +106,13 @@ first = int(float(sys.argv[1])) if(len(sys.argv) > 1) else 0
 last = int(float(sys.argv[2])) if(len(sys.argv) > 2) else 0
 fn_suffix = sys.argv[3] if(len(sys.argv) > 3) else ""
 
-for i in range(first, last + 1):
-    predict_and_plot_all("landreg", i, fn_suffix)
+min_year = 1995
+max_year = 2019
+granularity = float(1)/float(12)
+steps = (max_year-min_year)*12 + 1
+dates = [(min_year + x * granularity) for x in range(0, steps)]
+
+for aid in range(first, last + 1):
+    predictions_file = open(pred_save_path + "landreg" + "/" + str(aid) + fn_suffix + '.json')                       
+    predictions = json.load(predictions_file)
+    plot_predictions(predictions["F"]["L"]["price_preds"], predictions["F"]["L"]["sigmas"], dates)
