@@ -4,6 +4,7 @@ import json
 import joblib
 import os.path
 import numpy as np
+import mpld3
 import matplotlib.pyplot as plt
 from DataLoader import DataLoader
 from Utils import datetime64_to_lontime
@@ -36,7 +37,7 @@ def predict_and_plot_all(dataset, aid, fn_suffix):
     area_data = loader.load_data_for_aid(dataset, aid)
 
     fig = plt.figure()
-    fig.set_size_inches(18, 11)
+    # fig.set_size_inches(18, 11)
     fig.subplots_adjust(left=0.06, bottom=0.03, right=0.98, top=0.97)
     plots = []
     date_range = [1995, 2019, 12]
@@ -77,7 +78,13 @@ def predict_and_plot_all(dataset, aid, fn_suffix):
     plt.legend(handles=plots, loc="upper left", fontsize=10)
     plt.title("Price vs. Time")
     plt.ylabel('Price')
-    fig.savefig('graphs/p_vs_t_' + str(aid) + fn_suffix + "_.png")
-    # plt.show()
+    # fig.savefig('graphs/p_vs_t_' + str(aid) + fn_suffix + "_.png")
+    mpld3.show()
     plt.close('all')
 
+first = int(float(sys.argv[1])) if(len(sys.argv) > 1) else 0
+last = int(float(sys.argv[2])) if(len(sys.argv) > 2) else 0
+fn_suffix = sys.argv[3] if(len(sys.argv) > 3) else ""
+
+for i in range(first, last + 1):
+    predict_and_plot_all("landreg", i, fn_suffix)
