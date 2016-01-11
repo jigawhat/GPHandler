@@ -16,7 +16,8 @@ class DataLoader(object):
         self.verbose = verbose
         self.datasets = {}
         self.area_dbs = {
-            "landreg": {}
+            "landreg": {},
+            "zoopla_sales": {}
         }
 
         self.v_print("Using data source: %s" % data_source)
@@ -24,16 +25,21 @@ class DataLoader(object):
         data_config = json.load(data_config_file)
         coord_data_file = str(data_config["coord_data"][data_source])
         landreg_data_file = str(data_config["landreg_data"][data_source])
+        zoopla_sales_data_file = str(data_config["zoopla_sales_data"][data_source])
 
         self.v_print("Loading coord data from: %s" % coord_data_file)
         self.coord_data = pd.read_csv(coord_data_file)
 
         self.v_print("Loading London Land Registry data from: %s" % landreg_data_file)
+        self.v_print("Loading London Zoopla data from: %s" % zoopla_sales_data_file)
         self.datasets["landreg"] = self.load_dataset(landreg_data_file)
+        self.datasets["zoopla_sales"] = self.load_dataset(zoopla_sales_data_file)
 
         self.v_print("Loading model parameters databases")
         self.area_dbs["landreg"]["grid_squares"] = pd.read_csv("grid_squares_db.csv", index_col="id")
         self.area_dbs["landreg"]["postcode_areas"] = pd.read_csv("postcode_areas_db.csv", index_col="postcode")
+        self.area_dbs["zoopla_sales"]["grid_squares"] = self.area_dbs["landreg"]["grid_squares"]
+        self.area_dbs["zoopla_sales"]["postcode_areas"] = self.area_dbs["landreg"]["postcode_areas"]
 
     # Loads a csv dataset, assuming it has labeled columns date, price
     def load_dataset(self, csv_path):

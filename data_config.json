@@ -4,7 +4,11 @@
         "local" : "full_postcode_coords.csv"
     },
     "landreg_data" : {
-        "remote" : "http://www.doc.ic.ac.uk/project/2015/362/g1536201/aew13/GPHandler/london-data.csv",
+        "remote" : "http://www.doc.ic.ac.uk/project/2015/362/g1536201/aew13/GPHandler/landreg_data.csv",
         "local" : "landreg_data.csv"
+    },
+    "zoopla_sales_data" : {
+        "remote" : "http://www.doc.ic.ac.uk/project/2015/362/g1536201/aew13/GPHandler/zoopla_sales_data.csv",
+        "local" : "zoopla_sales_data.csv"
     }
 }

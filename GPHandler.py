@@ -2,9 +2,12 @@ import sys
 import json
 import joblib
 import Utils
+import numpy as np
 from GPModel import GPModel
 from DataLoader import DataLoader
 from LandRegDataFormatter import LandRegDataFormatter
+from ZooplaSalesDataFormatter import ZooplaSalesDataFormatter
+from Plot3d import plot_predictions
 
 model_save_path = "modelsaves/"
 pred_save_path = "predsaves/"
@@ -33,10 +36,6 @@ class GPHandler(object):
         if not aid[0].isalpha():
             aid = int(float(aid))
 
-        # Print processing message
-        sys.stdout.write("\rProcessing GP request for area id = " + str(aid) + ", in dataset " + dataset + "...")
-        sys.stdout.flush()
-
         # Get training params and data
         params = self.loader.load_params_for_aid(dataset, aid)
         if params == None:
@@ -45,9 +44,16 @@ class GPHandler(object):
             for param in req["params"]:
                 params[param] = req["params"][param]
         train_data = self.loader.load_data_for_params(dataset, aid, params)
+        n = len(train_data)
+
+        # Print processing message
+        sys.stdout.write("\rProcessing GP request for area id = " + str(aid) + \
+                        ", n = " + str(n) + ", in dataset " + dataset + "...")
+        sys.stdout.flush()
         
         # Create and fit gp model
-        gp_model = GPModel(LandRegDataFormatter(params))
+        data_formatter = ZooplaSalesDataFormatter(params) if dataset == "zoopla_sales" else LandRegDataFormatter(params)
+        gp_model = GPModel(data_formatter)
         gp_model.fit(params, train_data)
         final_kernel = gp_model.gpr.kernel_
 
@@ -66,28 +72,50 @@ class GPHandler(object):
         steps = (max_year-min_year)*12 + 1
         dates = [(min_year + x * granularity) for x in range(0, steps)]
 
-        p_json = {}
-        for pt in property_types:
-            p_json[pt] = {}
-            for et in estate_types:
-                request = {
-                    "dates": dates,
-                    "property_type": pt,
-                    "estate_type": et
-                }
-                price_preds, sigmas = gp_model.predict(request)
-                price_preds = list(price_preds)
-                sigmas = list(sigmas)
-                p_json[pt][et] = {
-                    "price_preds": price_preds,
-                    "sigmas": sigmas
-                }
+        request = {
+            "dates": dates,
+            "property_type": "F",
+            "num_bathrooms": 0,
+            "num_bedrooms": 2,
+            "num_recepts": 0,
+            "num_floors": 0,
+        }
+        plot_data = train_data[(train_data["property_type"]=="F")]
+        # request = {
+        #     "dates": dates,
+        #     "property_type": "F",
+        #     "estate_type": "L"
+        # }
+        # plot_data = train_data[(train_data["property_type"]=="F") & (train_data["estate_type"]=="L")]
+        plot_t = np.atleast_2d(map(Utils.datetime64_to_tinynoised_lontime, plot_data.index.values)).T
+        plot_y = plot_data['price'].values.ravel()
 
-        Utils.create_folder(pred_save_path)
-        Utils.create_folder(pred_save_path + dataset)
-        path = pred_save_path + dataset + "/" + str(aid) + filename_suffix + ".json"
-        with open(path, 'w') as outfile:
-            json.dump(p_json, outfile)
+        price_preds, sigmas = gp_model.predict(request)
+        name = dataset + "_" + str(aid) + filename_suffix
+        plot_predictions(price_preds, sigmas, dates, datapoints=(plot_t, plot_y), name=name)
+
+        # p_json = {}
+        # for pt in property_types:
+        #     p_json[pt] = {}
+        #     for et in estate_types:
+        #         request = {
+        #             "dates": dates,
+        #             "property_type": pt,
+        #             "estate_type": et
+        #         }
+        #         price_preds, sigmas = gp_model.predict(request)
+        #         price_preds = list(price_preds)
+        #         sigmas = list(sigmas)
+        #         p_json[pt][et] = {
+        #             "price_preds": price_preds,
+        #             "sigmas": sigmas
+        #         }
+
+        # Utils.create_folder(pred_save_path)
+        # Utils.create_folder(pred_save_path + dataset)
+        # path = pred_save_path + dataset + "/" + str(aid) + filename_suffix + ".json"
+        # with open(path, 'w') as outfile:
+        #     json.dump(p_json, outfile)
 
 
         # TODO: Store final kernel params back into areas db
@@ -111,7 +139,7 @@ class GPHandler(object):
             return self.status_response(403, "No id given in gaussian process request")
             
         dataset = str(req["dataset"])
-        if(dataset != "landreg"):
+        if(dataset != "landreg" and dataset != "zoopla_sales"):
             print("Error 404: Unknown dataset")
             return self.status_response(404, "Unknown dataset '" + dataset + "'.")
 

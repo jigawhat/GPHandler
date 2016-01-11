@@ -12,6 +12,7 @@ modelsaves_backup/
 pcs_len.py
 run.py
 commands.txt
+*.ipynb
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
