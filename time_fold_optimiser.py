@@ -46,8 +46,8 @@ for aid in [1923]:
                 "id": str(aid),
                 "params": {
                     "filename_suffix": fn_suffix,
-                    "end_date": fold
-                    "logadj": 0.0 if i == 0 else 1.2
+                    "end_date": fold,
+                    "logadj": 0.0 if i == 0 else 1.2,
                     "log_scaling": log_scales[i]
                 }
             }
