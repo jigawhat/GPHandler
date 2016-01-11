@@ -7,7 +7,7 @@ from GPModel import GPModel
 from DataLoader import DataLoader
 from LandRegDataFormatter import LandRegDataFormatter
 from ZooplaSalesDataFormatter import ZooplaSalesDataFormatter
-from Plot3d import plot_predictions
+from Plot3d import plot_predictions, plot_all
 
 model_save_path = "modelsaves/"
 pred_save_path = "predsaves/"
@@ -64,35 +64,42 @@ class GPHandler(object):
         Utils.create_folder(model_save_path + dataset + "/" + str(aid) + filename_suffix, overwrite=True)
         joblib.dump(gp_model, model_save_path + dataset + "/" + str(aid) + filename_suffix + "/gp_model.pkl")
 
-        # Generate predictions json
-
+        # Generate predictions and plot/save to json
+        # Get dates for prediction line generation
         min_year = 1995
         max_year = 2019
         granularity = float(1)/float(12)
         steps = (max_year-min_year)*12 + 1
         dates = [(min_year + x * granularity) for x in range(0, steps)]
 
-        request = {
-            "dates": dates,
-            "property_type": "F",
-            "num_bathrooms": 0,
-            "num_bedrooms": 2,
-            "num_recepts": 0,
-            "num_floors": 0,
-        }
-        plot_data = train_data[(train_data["property_type"]=="F")]
+
+        # Request from zoopla data
+
+        # request = {
+        #     "dates": dates,
+        #     "property_type": "F",
+        #     "num_bathrooms": 0,
+        #     "num_bedrooms": 2,
+        #     "num_recepts": 0,
+        #     "num_floors": 0,
+        # }
+        # plot_data = train_data[(train_data["property_type"]=="F")]
+
+        # Request from landreg data
+
         # request = {
         #     "dates": dates,
         #     "property_type": "F",
         #     "estate_type": "L"
         # }
         # plot_data = train_data[(train_data["property_type"]=="F") & (train_data["estate_type"]=="L")]
-        plot_t = np.atleast_2d(map(Utils.datetime64_to_tinynoised_lontime, plot_data.index.values)).T
-        plot_y = plot_data['price'].values.ravel()
+        # plot_t = np.atleast_2d(map(Utils.datetime64_to_tinynoised_lontime, plot_data.index.values)).T
+        # plot_y = plot_data['price'].values.ravel()
+        # price_preds, sigmas = gp_model.predict(request)
+        # name = dataset + "_" + str(aid) + filename_suffix
+        # plot_predictions(price_preds, sigmas, dates, datapoints=(plot_t, plot_y), name=name)
 
-        price_preds, sigmas = gp_model.predict(request)
-        name = dataset + "_" + str(aid) + filename_suffix
-        plot_predictions(price_preds, sigmas, dates, datapoints=(plot_t, plot_y), name=name)
+        # Request from landreg for all type combinations predictions json
 
         # p_json = {}
         # for pt in property_types:
@@ -117,6 +124,7 @@ class GPHandler(object):
         # with open(path, 'w') as outfile:
         #     json.dump(p_json, outfile)
 
+        # plot_all(dataset, aid, filename_suffix)
 
         # TODO: Store final kernel params back into areas db
 

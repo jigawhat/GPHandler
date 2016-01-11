@@ -32,16 +32,7 @@ def get_gp_model(dataset, aid, filename_suffix):
         time.sleep(3)
     return joblib.load(path)
 
-form = [("F", "D", "Freehold Detached", 'r', '--', 2, 'x'),
-        ("F", "F", "Freehold Flats", 'g', '--', 2, 'o'),
-        ("F", "S", "Freehold Semi-detached", 'c', '--', 2, 'x'),
-        ("F", "T", "Freehold Terraces", 'b', '--', 2, 'x'),
-        ("L", "D", "Lease Detached", 'r', '-', 1, 'o'),
-        ("L", "F", "Lease Flats", 'g', '-', 1, '+'),
-        ("L", "S", "Lease Semi-detached", 'c', '-', 1, 'o'),
-        ("L", "T", "Lease Terraces", 'b', '-', 1, 'o')]
-
-def plot_predictions(price_preds, sigmas, dates, datapoints=None, name=""):
+def plot_predictions(price_preds, sigmas, dates, datapoints=None, name="", vert_line_x=None):
     price_preds, sigmas, t = np.asarray(price_preds), np.asarray(sigmas), np.asarray(dates)
     fig = plt.figure()
     # fig.set_size_inches(18, 11)
@@ -65,32 +56,37 @@ def plot_predictions(price_preds, sigmas, dates, datapoints=None, name=""):
     # plt.show()
     plt.close('all')
 
+form = [("F", "D", "Freehold Detached", 'r', '--', 2, 'x'),
+        ("F", "F", "Freehold Flats", 'g', '--', 2, 'o'),
+        ("F", "S", "Freehold Semi-detached", 'c', '--', 2, 'x'),
+        ("F", "T", "Freehold Terraces", 'b', '--', 2, 'x'),
+        ("L", "D", "Lease Detached", 'r', '-', 1, 'o'),
+        ("L", "F", "Lease Flats", 'g', '-', 1, '+'),
+        ("L", "S", "Lease Semi-detached", 'c', '-', 1, 'o'),
+        ("L", "T", "Lease Terraces", 'b', '-', 1, 'o')]
+
 def plot_all(dataset, aid, fn_suffix):
 
     #gp_model = get_gp_model(dataset, aid, fn_suffix)
     predictions = None
     predictions_file = open(pred_save_path + dataset + "/" + str(aid) + fn_suffix + '.json')                       
     predictions = json.load(predictions_file)
+    area_data = loader.load_data_for_aid(dataset, aid)
 
     fig = plt.figure()
     # fig.set_size_inches(18, 11)
-    fig.subplots_adjust(left=0.06, bottom=0.03, right=0.98, top=0.97)
+    fig.subplots_adjust(left=0.17, bottom=0.05, right=0.95, top=0.95)
     plots = []
-    date_range = [1995, 2019, 12]
-    request = {
-        "dataset": dataset,
-        "id": aid,
-        "date_range": date_range,
-        "filename_suffix": fn_suffix
-    }
 
-    # Load x values (dates) to plot predictions for
-    start, stop, step_fraction = map(float, date_range)
-    t = np.atleast_2d(np.linspace(start, stop, ((stop-start)*step_fraction) + 1)).T
+    # Get dates for prediction line generation
+    min_year = 1995
+    max_year = 2019
+    granularity = float(1)/float(12)
+    steps = (max_year-min_year)*12 + 1
+    t = [(min_year + x * granularity) for x in range(0, steps)]
 
     # Add data and prediction plots for each property/estate type combination
-    for typ in form:
-        et, pt, label, col, linestyle, linewidth, ico = typ
+    for et, pt, label, col, linestyle, linewidth, ico  in form:
         preds = predictions[pt][et]
         price_pred, sigma = np.asarray(preds["price_preds"]), np.asarray(preds["sigmas"])
         area_data_for_type = area_data[(area_data['property_type']==pt) & \
@@ -113,9 +109,9 @@ def plot_all(dataset, aid, fn_suffix):
     # Draw graph
     plt.legend(handles=plots, loc="upper left", fontsize=10)
     plt.title("Price vs. Time")
-    plt.ylabel('Price')
-    # fig.savefig('graphs/p_vs_t_' + str(aid) + fn_suffix + "_.png")
-    mpld3.show()
+    plt.ylabel('Price (' + u"\xA3" + ')')
+    fig.savefig('graphs/p_vs_t_' + str(aid) + fn_suffix + "_.png")
+    # mpld3.show()
     plt.close('all')
 
 # first = int(float(sys.argv[1])) if(len(sys.argv) > 1) else 0

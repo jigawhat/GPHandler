@@ -68,6 +68,18 @@ class LandRegDataFormatter(DataFormatter):
             y_2003 = np.vectorize(lambda x: math.log(x, self.logadj))(y_2003)
         post_2003_variance = np.var(y_2003)
 
+        # Experimental usage of each property type data's variance as alpha values for each data point
+        # pt_alphas = {}
+        # for pt in self.pt_map:
+        #     pt_df = df[df["property_type"]==pt]
+        #     y_2003 = pt_df[pt_df.index > np.datetime64('2003-01-01T00:00:00Z')]['price'].values.ravel()
+        #     y_2003 = y_2003 * self.price_scaling_factor
+        #     if self.logadj:
+        #         y_2003 = np.vectorize(lambda x: math.log(x, self.logadj))(y_2003)
+        #     pt_alphas[pt] = np.var(y_2003)
+        # alphas = np.asarray(map(lambda x: pt_alphas[x], df['property_type']))
+        # return X, y, alphas
+
         return X, y, post_2003_variance
 
     # Format input X
