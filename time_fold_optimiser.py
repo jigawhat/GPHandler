@@ -17,6 +17,7 @@ def get_gp_model(dataset, aid, filename_suffix):
     path = model_save_path + dataset + "/" + str(aid) + filename_suffix + "/gp_model.pkl"
     while not os.path.isfile(path):
         time.sleep(3)
+        print path
     return joblib.load(path)
 
 
@@ -24,8 +25,8 @@ typs = [("F", "D"), ("F", "F"), ("F", "S"), ("F", "T"),
         ("L", "D"), ("L", "F"), ("L", "S"), ("L", "T")]
 
 dataset = "landreg"
-folds = [2013, 2012, 2011]
-log_scales = [0.0, 1.6666666, 2.0, 3.3333333, 4.0, 7.0, 10.0, 15.0, 20.0]
+folds = [2014, 2013, 2012, 2011, 2010]
+log_scales = [0.0, 1.6666666, 2.0, 3.3333333, 4.0, 6.0, 8.0, 10.0, 12.0, 15.0, 20.0]
 
 min_year = 1995
 max_year = 2019
@@ -52,13 +53,13 @@ for aid in [1923]:
                 }
             }
             path = model_save_path + dataset + "/" + str(aid) + fn_suffix + "/gp_model.pkl"
-            if not os.path.isfile(path):
-                submit_gp_request(request)
-                paths.append(path)
+            # if not os.path.isfile(path):
+            submit_gp_request(request)
+            paths.append(path)
 
-    # for path in paths:
-    #     if os.path.isfile(path):
-    #         os.remove(path)
+    for path in paths:
+        if os.path.isfile(path):
+            os.remove(path)
     time.sleep(1)
     i = 0
     while any(map(lambda x: not os.path.isfile(x), paths)):
@@ -76,7 +77,7 @@ for aid in [1923]:
             fn_suffix = "_" + str(fold) + "_" + ("normal" if lsi == 0 else ("logadj_sc" + str(lsi)))
             gp_model = get_gp_model(dataset, aid, fn_suffix)
             test_data = area_data[(area_data.index >= lontime_to_datetime64(float(fold))) & \
-                                  (area_data.index < lontime_to_datetime64(float(fold + 3)))]
+                                  (area_data.index < lontime_to_datetime64(float(fold + 2)))]
             for et, pt in typs:
                 test_data_for_type = test_data[(test_data['property_type']==pt) & \
                                                (test_data['estate_type']==et)]
@@ -100,7 +101,7 @@ for aid in [1923]:
         rmse = np.sqrt(sum(ses)/len(ses))
         mpll = np.mean(plls)
         res = np.array([[lsi, mpll, rmse]])
-        results = res if lsi == 0 else np.concatenate(results, res)
+        results = res if lsi == 0 else np.concatenate((results, res), axis=0)
     
     max_mpll_i = np.argmax(results[:, 1])
     min_rmse_i = np.argmin(results[:, 2])
@@ -129,7 +130,7 @@ for aid in [1923]:
                 "property_type": "F",
                 "estate_type": "L"
             }
-            fn_suffix = "_" + str(fold) + "_" + ("normal" if lsi == 0 else ("logadj_sc" + str(lsi)))
+            fn_suffix = "_" + str(fold) + "_" + ("normal" if lsi == 0 else ("logadj_sc" + str(int(lsi))))
             gp_model = get_gp_model(dataset, aid, fn_suffix)
             pred_y, sigmas = gp_model.predict(request)
             name = dataset + "_" + str(aid) + fn_suffix
