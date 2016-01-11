@@ -43,6 +43,9 @@ def plot_predictions(price_preds, sigmas, dates, datapoints=None, name="", vert_
         d_dates, d_prices = datapoints
         data_plot = plt.plot(d_dates, d_prices, 'x', color='blue', ls='', label="Price Data")
 
+    if(vert_line_x != None):
+        vert_line_plot = plt.axvline(vert_line_x, color='r', linestyle='--')
+
     plt.fill(np.concatenate([t, t[::-1]]),
              np.concatenate([(price_preds - 1.9600 * sigmas),
                              (price_preds + 1.9600 * sigmas)[::-1]]),
@@ -114,17 +117,17 @@ def plot_all(dataset, aid, fn_suffix):
     # mpld3.show()
     plt.close('all')
 
-# first = int(float(sys.argv[1])) if(len(sys.argv) > 1) else 0
-# last = int(float(sys.argv[2])) if(len(sys.argv) > 2) else 0
-# fn_suffix = sys.argv[3] if(len(sys.argv) > 3) else ""
+first = int(float(sys.argv[1])) if(len(sys.argv) > 1) else 0
+last = int(float(sys.argv[2])) if(len(sys.argv) > 2) else 0
+fn_suffix = sys.argv[3] if(len(sys.argv) > 3) else ""
 
-# min_year = 1995
-# max_year = 2019
-# granularity = float(1)/float(12)
-# steps = (max_year-min_year)*12 + 1
-# dates = [(min_year + x * granularity) for x in range(0, steps)]
+min_year = 1995
+max_year = 2019
+granularity = float(1)/float(12)
+steps = (max_year-min_year)*12 + 1
+dates = [(min_year + x * granularity) for x in range(0, steps)]
 
-# for aid in range(first, last + 1):
-#     predictions_file = open(pred_save_path + "landreg" + "/" + str(aid) + fn_suffix + '.json')                       
-#     predictions = json.load(predictions_file)
-#     plot_predictions(predictions["F"]["L"]["price_preds"], predictions["F"]["L"]["sigmas"], dates)
+for aid in range(first, last + 1):
+    predictions_file = open(pred_save_path + "landreg" + "/" + str(aid) + fn_suffix + '.json')                       
+    predictions = json.load(predictions_file)
+    plot_predictions(predictions["F"]["L"]["price_preds"], predictions["F"]["L"]["sigmas"], dates, name="yes", vert_line_x=2016.0)
