@@ -52,12 +52,12 @@ for aid in [1923]:
             if i > 0:
                 request["params"]["logadj"] = 1.2,
                 request["params"]["log_scaling"] = log_scales[i]
-            # submit_gp_request(request)
+            submit_gp_request(request)
             paths.append(model_save_path + dataset + "/" + str(aid) + fn_suffix + "/gp_model.pkl")
 
-    # for path in paths:
-    #     if os.path.isfile(path):
-    #         os.remove(path)
+    for path in paths:
+        if os.path.isfile(path):
+            os.remove(path)
     time.sleep(1)
     i = 0
     while any(map(lambda x: not os.path.isfile(x), paths)):
