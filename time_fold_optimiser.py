@@ -51,12 +51,14 @@ for aid in [1923]:
                     "log_scaling": log_scales[i]
                 }
             }
-            submit_gp_request(request)
-            paths.append(model_save_path + dataset + "/" + str(aid) + fn_suffix + "/gp_model.pkl")
+            path = model_save_path + dataset + "/" + str(aid) + fn_suffix + "/gp_model.pkl"
+            if not os.path.isfile(path):
+                submit_gp_request(request)
+                paths.append(path)
 
-    for path in paths:
-        if os.path.isfile(path):
-            os.remove(path)
+    # for path in paths:
+    #     if os.path.isfile(path):
+    #         os.remove(path)
     time.sleep(1)
     i = 0
     while any(map(lambda x: not os.path.isfile(x), paths)):
@@ -98,7 +100,7 @@ for aid in [1923]:
         rmse = np.sqrt(sum(ses)/len(ses))
         mpll = np.mean(plls)
         res = np.array([[lsi, mpll, rmse]])
-        results = res if results == None else np.concatenate(results, res)
+        results = res if lsi == 0 else np.concatenate(results, res)
     
     max_mpll_i = np.argmax(results[:, 1])
     min_rmse_i = np.argmin(results[:, 2])
