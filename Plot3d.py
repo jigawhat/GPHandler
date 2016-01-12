@@ -56,7 +56,7 @@ def plot_predictions(price_preds, sigmas, dates, datapoints=None, name="", vert_
     # tooltip = plugins.PointLabelTooltip(pred_plot[0], labels=map(str, list(price_preds)))
     # plugins.connect(fig, tooltip)
     # plugins.connect(fig, plugins.Reset(), plugins.Zoom(), plugins.BoxZoom(), tooltip)
-    # plt.show()
+    plt.show()
     plt.close('all')
 
 form = [("F", "D", "Freehold Detached", 'r', '--', 2, 'x'),
@@ -117,17 +117,17 @@ def plot_all(dataset, aid, fn_suffix):
     # mpld3.show()
     plt.close('all')
 
-# first = int(float(sys.argv[1])) if(len(sys.argv) > 1) else 0
-# last = int(float(sys.argv[2])) if(len(sys.argv) > 2) else 0
-# fn_suffix = sys.argv[3] if(len(sys.argv) > 3) else ""
+first = int(float(sys.argv[1])) if(len(sys.argv) > 1) else 0
+last = int(float(sys.argv[2])) if(len(sys.argv) > 2) else 0
+fn_suffix = sys.argv[3] if(len(sys.argv) > 3) else ""
 
-# min_year = 1995
-# max_year = 2019
-# granularity = float(1)/float(12)
-# steps = (max_year-min_year)*12 + 1
-# dates = [(min_year + x * granularity) for x in range(0, steps)]
+min_year = 1995
+max_year = 2019
+granularity = float(1)/float(12)
+steps = (max_year-min_year)*12 + 1
+dates = [(min_year + x * granularity) for x in range(0, steps)]
 
-# for aid in range(first, last + 1):
-#     predictions_file = open(pred_save_path + "landreg" + "/" + str(aid) + fn_suffix + '.json')                       
-#     predictions = json.load(predictions_file)
-#     plot_predictions(predictions["F"]["L"]["price_preds"], predictions["F"]["L"]["sigmas"], dates, name="yes", vert_line_x=2016.0)
+for aid in range(first, last + 1):
+    predictions_file = open(pred_save_path + "landreg" + "/" + str(aid) + fn_suffix + '.json')                       
+    predictions = json.load(predictions_file)
+    plot_predictions(predictions["F"]["L"]["price_preds"], predictions["F"]["L"]["sigmas"], dates, name="yes", vert_line_x=2016.0)

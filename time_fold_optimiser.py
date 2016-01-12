@@ -28,6 +28,8 @@ dataset = "landreg"
 folds = [2014, 2013, 2012, 2011, 2010]
 log_scales = [0.0, 1.6666666, 2.0, 3.3333333, 4.0, 6.0, 8.0, 10.0, 12.0, 15.0, 20.0]
 
+log_scales = [0.0, 6.0]
+
 min_year = 1995
 max_year = 2019
 granularity = float(1)/float(12)
@@ -53,13 +55,13 @@ for aid in [1923]:
                 }
             }
             path = model_save_path + dataset + "/" + str(aid) + fn_suffix + "/gp_model.pkl"
-            # if not os.path.isfile(path):
-            submit_gp_request(request)
-            paths.append(path)
+            if not os.path.isfile(path):
+                submit_gp_request(request)
+                paths.append(path)
 
-    for path in paths:
-        if os.path.isfile(path):
-            os.remove(path)
+    # for path in paths:
+    #     if os.path.isfile(path):
+    #         os.remove(path)
     time.sleep(1)
     i = 0
     while any(map(lambda x: not os.path.isfile(x), paths)):
@@ -134,5 +136,6 @@ for aid in [1923]:
             gp_model = get_gp_model(dataset, aid, fn_suffix)
             pred_y, sigmas = gp_model.predict(request)
             name = dataset + "_" + str(aid) + fn_suffix
+            print "drawing"
             plot_predictions(pred_y, sigmas, t, datapoints=(data_x, data_y), name=name, vert_line_x=float(fold))
 
