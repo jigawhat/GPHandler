@@ -10,7 +10,7 @@ from Utils import datetime64_to_lontime
 
 model_save_path = "modelsaves/"
 pred_save_path = "predsaves/"
-loader = DataLoader()
+loader = DataLoader(verbose=False)
 
 def get_gp_model(dataset, aid, filename_suffix):
     path = model_save_path + dataset + "/" + str(aid) + filename_suffix + "/gp_model.pkl"

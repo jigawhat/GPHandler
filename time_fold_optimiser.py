@@ -28,16 +28,14 @@ dataset = "landreg"
 folds = [2014, 2013, 2012, 2011, 2010]
 log_scales = [0.0, 2.0, 3.3333333, 4.0, 5.0, 6.0, 7.0, 8.0, 10.0, 12.0, 15.0, 20.0]
 
-log_scales = [0.0, 6.0]
-
 min_year = 1995
 max_year = 2019
 granularity = float(1)/float(12)
 steps = (max_year-min_year)*12 + 1
 t = [(min_year + x * granularity) for x in range(0, steps)]
 
-# for aid in range(2000, 2015):
-for aid in [1923]:
+for aid in range(2000, 2015):
+# for aid in [1923]:
 
     area_data = loader.load_data_for_aid(dataset, aid)
 
@@ -56,9 +54,12 @@ for aid in [1923]:
                 }
             }
             path = model_save_path + dataset + "/" + str(aid) + fn_suffix
-            if not os.path.exists(path):
-                submit_gp_request(request)
-                paths.append(path)
+            submit_gp_request(request)
+            paths.append(path)
+
+    for path in paths:
+        if os.path.exists(path):
+            shutil.rmtree(path)
 
     time.sleep(1)
     i = 0
@@ -127,7 +128,7 @@ for aid in [1923]:
         "id": str(aid),
         "params": {
             "logadj": 1.2,
-            "log_scaling": log_scales[results[max_mpll_i, 0]]
+            "log_scaling": log_scales[int(results[max_mpll_i, 0])]
         }
     }
 
