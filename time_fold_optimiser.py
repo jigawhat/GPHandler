@@ -26,7 +26,7 @@ typs = [("F", "D"), ("F", "F"), ("F", "S"), ("F", "T"),
 
 dataset = "landreg"
 folds = [2014, 2013, 2012, 2011, 2010]
-log_scales = [0.0, 1.6666666, 2.0, 3.3333333, 4.0, 6.0, 8.0, 10.0, 12.0, 15.0, 20.0]
+log_scales = [0.0, 2.0, 3.3333333, 4.0, 5.0, 6.0, 7.0, 8.0, 10.0, 12.0, 15.0, 20.0]
 
 log_scales = [0.0, 6.0]
 
@@ -36,6 +36,7 @@ granularity = float(1)/float(12)
 steps = (max_year-min_year)*12 + 1
 t = [(min_year + x * granularity) for x in range(0, steps)]
 
+# for aid in range(2000, 2015):
 for aid in [1923]:
 
     area_data = loader.load_data_for_aid(dataset, aid)
@@ -54,17 +55,14 @@ for aid in [1923]:
                     "log_scaling": log_scales[i]
                 }
             }
-            path = model_save_path + dataset + "/" + str(aid) + fn_suffix + "/gp_model.pkl"
-            if not os.path.isfile(path):
+            path = model_save_path + dataset + "/" + str(aid) + fn_suffix
+            if not os.path.exists(path):
                 submit_gp_request(request)
                 paths.append(path)
 
-    # for path in paths:
-    #     if os.path.isfile(path):
-    #         os.remove(path)
     time.sleep(1)
     i = 0
-    while any(map(lambda x: not os.path.isfile(x), paths)):
+    while any(map(lambda x: not os.path.exists(x), paths)):
         i += 10
         time.sleep(10)
         print i
@@ -100,6 +98,7 @@ for aid in [1923]:
                     s = sigmas[i] ** 2
                     pll = (-1/2 * np.log(2 * np.pi * s)) - (se / (2 * s))
                     plls.append(pll)
+
         rmse = np.sqrt(sum(ses)/len(ses))
         mpll = np.mean(plls)
         res = np.array([[lsi, mpll, rmse]])
@@ -119,23 +118,39 @@ for aid in [1923]:
     print "Min mpll: " + str(results[min_mpll_i])
     print
 
-    graph_res_is = [ max_mpll_i, min_rmse_i, max_rmse_i, min_mpll_i ]
+    for path in paths:
+        if os.path.exists(path):
+            shutil.rmtree(path)
 
-    for i in graph_res_is:
-        for fold in folds:
-            lsi = results[i][0]
-            area_data_flats = area_data[(area_data["property_type"]=="F") & (area_data["estate_type"]=="L")]
-            data_x = np.atleast_2d(map(datetime64_to_lontime, area_data_flats.index.values)).T
-            data_y = area_data_flats['price'].values.ravel()
-            request = {
-                "dates": t,
-                "property_type": "F",
-                "estate_type": "L"
-            }
-            fn_suffix = "_" + str(fold) + "_" + ("normal" if lsi == 0 else ("logadj_sc" + str(int(lsi))))
-            gp_model = get_gp_model(dataset, aid, fn_suffix)
-            pred_y, sigmas = gp_model.predict(request)
-            name = dataset + "_" + str(aid) + fn_suffix
-            print "drawing"
-            plot_predictions(pred_y, sigmas, t, datapoints=(data_x, data_y), name=name, vert_line_x=float(fold))
+    request = {
+        "dataset": dataset,
+        "id": str(aid),
+        "params": {
+            "logadj": 1.2,
+            "log_scaling": log_scales[results[max_mpll_i, 0]]
+        }
+    }
+
+    print request
+
+    # graph_res_is = [ max_mpll_i, min_rmse_i, max_rmse_i, min_mpll_i ]
+
+    # for i in graph_res_is:
+    #     for fold in folds:
+    #         lsi = results[i][0]
+    #         area_data_flats = area_data[(area_data["property_type"]=="F") & (area_data["estate_type"]=="L")]
+    #         data_x = np.atleast_2d(map(datetime64_to_lontime, area_data_flats.index.values)).T
+    #         data_y = area_data_flats['price'].values.ravel()
+    #         request = {
+    #             "dates": t,
+    #             "property_type": "F",
+    #             "estate_type": "L"
+    #         }
+    #         fn_suffix = "_" + str(fold) + "_" + ("normal" if lsi == 0 else ("logadj_sc" + str(int(lsi))))
+    #         gp_model = get_gp_model(dataset, aid, fn_suffix)
+    #         pred_y, sigmas = gp_model.predict(request)
+    #         name = dataset + "_" + str(aid) + fn_suffix
+    #         print "drawing"
+    #         plot_predictions(pred_y, sigmas, t, datapoints=(data_x, data_y), name=name, vert_line_x=float(fold))
+
 
