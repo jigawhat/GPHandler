@@ -13,6 +13,7 @@ pcs_len.py
 run.py
 commands.txt
 *.ipynb
+sklearn/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

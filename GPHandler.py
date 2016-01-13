@@ -39,12 +39,17 @@ class GPHandler(object):
         # Get training params and data
         params = self.loader.load_params_for_aid(dataset, aid)
         if params == None:
-            return self.status_response(405, "Unknown area id: " + str(aid))
+            print "Params not found for area id: " + str(aid) + ", using SW7 params..."
+            params = self.loader.load_params_for_aid(dataset, "SW7")
+            print params
         if "params" in req:
             for param in req["params"]:
                 params[param] = req["params"][param]
         train_data = self.loader.load_data_for_params(dataset, aid, params)
         n = len(train_data)
+        if n < 20:
+            print "n less than 20, for aid: " + str(aid)
+            return self.status_response(405, "n less than 20 for aid: " + str(aid))
 
         # Print processing message
         sys.stdout.write("\rProcessing GP request for area id = " + str(aid) + \
