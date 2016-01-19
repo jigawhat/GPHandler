@@ -17,6 +17,7 @@ run.py
 commands.txt
 *.ipynb
 sklearn/
+nohup.out
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

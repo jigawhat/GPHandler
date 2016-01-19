@@ -65,8 +65,8 @@ def plot_all(dataset, aid, fn_suffix):
     area_data = loader.load_data_for_aid(dataset, aid)
 
     fig = plt.figure()
-    # fig.set_size_inches(18, 11)
-    fig.subplots_adjust(left=0.17, bottom=0.05, right=0.95, top=0.95)
+    fig.set_size_inches(14, 8)
+    fig.subplots_adjust(left=0.15, bottom=0.07, right=0.93, top=0.93)
     plots = []
 
     # Get dates for prediction line generation
@@ -77,7 +77,7 @@ def plot_all(dataset, aid, fn_suffix):
     t = [(min_year + x * granularity) for x in range(0, steps)]
 
     # Add data and prediction plots for each property/estate type combination
-    for i in [3, 5]:
+    for i in [1, 3, 5]:
         et, pt, label, col, linestyle, linewidth, ico = form[i]
         preds = predictions[pt][et]
         price_pred, sigma = np.asarray(preds["price_preds"]), np.asarray(preds["sigmas"])
@@ -87,8 +87,6 @@ def plot_all(dataset, aid, fn_suffix):
         d_prices = area_data_for_type['price'].values.ravel()
         dot_style = col + ico
         line_col = col
-        if(line_col == 'g'):
-            line_col = '#00FF00'
         pred_plot, = plt.plot(t, price_pred, color=line_col, ls=linestyle, lw=linewidth, label=label + " Prediction")
         data_plot, = plt.plot(d_dates, d_prices, dot_style, ls='', label=label)
         plots.append(pred_plot)
@@ -99,6 +97,16 @@ def plot_all(dataset, aid, fn_suffix):
                  alpha=.15, fc=col, ec='None', label='95% confidence interval')
 
     # Draw graph
+    vert_line_x = None
+    if "2012" in fn_suffix:
+        vert_line_x = 2012
+    elif "2013" in fn_suffix:
+        vert_line_x = 2013
+    elif "2014" in fn_suffix:
+        vert_line_x = 2014
+
+    if vert_line_x != None:
+        vert_line_plot = plt.axvline(vert_line_x, color='r', linestyle='--')
     plt.legend(handles=plots, loc="upper left", fontsize=10)
     plt.title("Price vs. Time")
     plt.ylabel('Price (' + u"\xA3" + ')')
@@ -106,20 +114,42 @@ def plot_all(dataset, aid, fn_suffix):
     # mpld3.show()
     plt.close('all')
 
-
-plot_all("landreg", 1923, "")
-
 # first = int(float(sys.argv[1])) if(len(sys.argv) > 1) else 0
 # last = int(float(sys.argv[2])) if(len(sys.argv) > 2) else 0
 # fn_suffix = sys.argv[3] if(len(sys.argv) > 3) else ""
 
-# min_year = 1995
-# max_year = 2019
-# granularity = float(1)/float(12)
-# steps = (max_year-min_year)*12 + 1
-# dates = [(min_year + x * granularity) for x in range(0, steps)]
+aid = sys.argv[1] if len(sys.argv) > 1 else 0
+fn_suffix = sys.argv[2] if len(sys.argv) > 2 else ""
+# plot_all("landreg", aid, fn_suffix)
+
+vert_line_x = None
+if "2012" in fn_suffix:
+    vert_line_x = 2012
+elif "2013" in fn_suffix:
+    vert_line_x = 2013
+elif "2014" in fn_suffix:
+    vert_line_x = 2014
+
+min_year = 1995
+max_year = 2019
+granularity = float(1)/float(12)
+steps = (max_year-min_year)*12 + 1
+dates = [(min_year + x * granularity) for x in range(0, steps)]
+
+area_data = loader.load_data_for_aid("landreg", aid)
+area_data_for_type = area_data[(area_data['property_type']=="F") & \
+                                       (area_data['estate_type']=="L")]
+d_dates = np.atleast_2d(map(datetime64_to_lontime, area_data_for_type.index.values)).T
+d_prices = area_data_for_type['price'].values.ravel()
+predictions_file = open(pred_save_path + "landreg" + "/" + str(aid) + fn_suffix + '.json')
+predictions = json.load(predictions_file)
+plot_predictions(predictions["F"]["L"]["price_preds"], predictions["F"]["L"]["sigmas"],
+    dates, datapoints=(d_dates, d_prices), name=str(aid) + fn_suffix + "_", vert_line_x=vert_line_x)
 
 # for aid in range(first, last + 1):
 #     predictions_file = open(pred_save_path + "landreg" + "/" + str(aid) + fn_suffix + '.json')                       
 #     predictions = json.load(predictions_file)
 #     plot_predictions(predictions["F"]["L"]["price_preds"], predictions["F"]["L"]["sigmas"], dates, name="yes", vert_line_x=2016.0)
+
+
+
