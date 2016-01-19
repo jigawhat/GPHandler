@@ -14,18 +14,6 @@ model_save_path = "modelsaves/"
 pred_save_path = "predsaves/"
 loader = DataLoader(verbose=False)
 
-# Define some CSS to control our custom labels
-css = """
-html
-{
-  font-family:Arial, Helvetica, sans-serif;
-  border: 1px solid black;
-  text-align: right;
-  color: #ffffff;
-  background-color: #000000;
-}
-"""
-
 def get_gp_model(dataset, aid, filename_suffix):
     path = model_save_path + dataset + "/" + str(aid) + filename_suffix + "/gp_model.pkl"
     while not os.path.isfile(path):
@@ -89,7 +77,8 @@ def plot_all(dataset, aid, fn_suffix):
     t = [(min_year + x * granularity) for x in range(0, steps)]
 
     # Add data and prediction plots for each property/estate type combination
-    for et, pt, label, col, linestyle, linewidth, ico  in form:
+    for i in [3, 5]:
+        et, pt, label, col, linestyle, linewidth, ico = form[i]
         preds = predictions[pt][et]
         price_pred, sigma = np.asarray(preds["price_preds"]), np.asarray(preds["sigmas"])
         area_data_for_type = area_data[(area_data['property_type']==pt) & \
@@ -116,6 +105,9 @@ def plot_all(dataset, aid, fn_suffix):
     fig.savefig('graphs/p_vs_t_' + str(aid) + fn_suffix + "_.png")
     # mpld3.show()
     plt.close('all')
+
+
+plot_all("landreg", 1923, "")
 
 # first = int(float(sys.argv[1])) if(len(sys.argv) > 1) else 0
 # last = int(float(sys.argv[2])) if(len(sys.argv) > 2) else 0

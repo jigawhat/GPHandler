@@ -7,7 +7,7 @@ from GPModel import GPModel
 from DataLoader import DataLoader
 from LandRegDataFormatter import LandRegDataFormatter
 from ZooplaSalesDataFormatter import ZooplaSalesDataFormatter
-from Plot3d import plot_predictions, plot_all
+# from Plot3d import plot_predictions, plot_all
 
 model_save_path = "modelsaves/"
 pred_save_path = "predsaves/"
@@ -106,28 +106,29 @@ class GPHandler(object):
 
         # Request from landreg for all type combinations predictions json
 
-        # p_json = {}
-        # for pt in property_types:
-        #     p_json[pt] = {}
-        #     for et in estate_types:
-        #         request = {
-        #             "dates": dates,
-        #             "property_type": pt,
-        #             "estate_type": et
-        #         }
-        #         price_preds, sigmas = gp_model.predict(request)
-        #         price_preds = list(price_preds)
-        #         sigmas = list(sigmas)
-        #         p_json[pt][et] = {
-        #             "price_preds": price_preds,
-        #             "sigmas": sigmas
-        #         }
+        if "save_json" in params and float(params["save_json"]):
+            p_json = {}
+            for pt in property_types:
+                p_json[pt] = {}
+                for et in estate_types:
+                    request = {
+                        "dates": dates,
+                        "property_type": pt,
+                        "estate_type": et
+                    }
+                    price_preds, sigmas = gp_model.predict(request)
+                    price_preds = list(price_preds)
+                    sigmas = list(sigmas)
+                    p_json[pt][et] = {
+                        "price_preds": price_preds,
+                        "sigmas": sigmas
+                    }
 
-        # Utils.create_folder(pred_save_path)
-        # Utils.create_folder(pred_save_path + dataset)
-        # path = pred_save_path + dataset + "/" + str(aid) + filename_suffix + ".json"
-        # with open(path, 'w') as outfile:
-        #     json.dump(p_json, outfile)
+            Utils.create_folder(pred_save_path)
+            Utils.create_folder(pred_save_path + dataset)
+            path = pred_save_path + dataset + "/" + str(aid) + filename_suffix + ".json"
+            with open(path, 'w') as outfile:
+                json.dump(p_json, outfile)
 
         # plot_all(dataset, aid, filename_suffix)
 
