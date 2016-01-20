@@ -18,6 +18,7 @@ commands.txt
 *.ipynb
 sklearn/
 nohup.out
+test.py
 archive/
 
 # Byte-compiled / optimized / DLL files

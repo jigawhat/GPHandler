@@ -4,13 +4,14 @@ from GPHandler import GPHandler
 
 model_save_path = "modelsaves/"
 pred_save_path = "predsaves/"
+dataset = "landreg"
+aid = 1000
 gph = GPHandler()
-
 
 def test_loading_params_and_data():
     request = {
-        "dataset": "landreg",
-        "id": 1000,
+        "dataset": dataset,
+        "id": aid,
         "params": {
             "logadj": 1.2,
             "log_scaling": 7.0
@@ -22,8 +23,8 @@ def test_loading_params_and_data():
 
 def test_check_request_that_should_pass():
     request = {
-        "dataset": "landreg",
-        "id": 1000,
+        "dataset": dataset,
+        "id": aid,
         "params": {
             "logadj": 1.2,
             "log_scaling": 7.0
@@ -35,15 +36,15 @@ def test_check_request_that_should_pass():
 def test_check_request_that_should_fail():
     request = {
         "dataset": "dsfknsl",
-        "id": 1000
+        "id": aid
     }
     status = gph.check_request(request)
     assert status != 200
 
 def test_handling_gp_request_and_saving_json():
     request = {
-        "dataset": "landreg",
-        "id": 1000,
+        "dataset": dataset,
+        "id": aid,
         "params": {
             "logadj": 1.2,
             "log_scaling": 7.0,
@@ -51,8 +52,8 @@ def test_handling_gp_request_and_saving_json():
             "save_json": 1
         }
     }
-    model_path = model_save_path + "landreg/1000_test_GPHandler_gp_model"
-    json_path = pred_save_path + "landreg/1000_test_GPHandler_gp_model.json"
+    model_path = model_save_path + dataset + "/1000_test_GPHandler_gp_model"
+    json_path = pred_save_path + dataset + "/1000_test_GPHandler_gp_model.json"
 
     response = gph.handle_gp_request(request)
     assert response["status"] == 200
@@ -60,7 +61,7 @@ def test_handling_gp_request_and_saving_json():
     assert os.path.isfile(json_path)
 
     if os.path.exists(model_path):
-        shutil.rmtree(model_path)
+       shutil.rmtree(model_path)
 
     if os.path.isfile(json_path):
         os.remove(json_path)

@@ -105,4 +105,3 @@ class LandRegDataFormatter(DataFormatter):
         return price_preds_gbp, sigma_gbp
 
 
-
