@@ -7,8 +7,6 @@ modelsaves/
 predsaves/
 modelsaves_backup/
 predsaves_backup/
-full_postcode_coords.csv
-landreg_data.csv
 modelsaves_backup/
 *.txt~
 *.py~
