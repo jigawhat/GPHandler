@@ -1,5 +1,6 @@
 import numpy as np
 import os
+import sys
 import shutil
 from datetime import datetime, date
 
@@ -15,6 +16,7 @@ def create_folder(path, overwrite=False):
             return
     os.mkdir(path)
 
+# Functions for conversion between date datatypes
 def timestamp():
     return datetime_to_epoch(datetime.now())
 
@@ -47,5 +49,11 @@ def datetime64_to_tinynoised_lontime(dt64):
 def datetime64_to_tinynoised_datetime64(dt64):
     return apply_noise(dt64, datetime_second * 6000)
 
+# Apply a given magnitude random noise to a number
 def apply_noise(number, noise_magnitude):
     return number + (2 * noise_magnitude * (np.random.random() - 0.5))
+
+# Print using standard output, flush immediately (can use '\r' to rewrite current line)
+def sys_print(obj):
+    sys.stdout.write(str(obj))
+    sys.stdout.flush()

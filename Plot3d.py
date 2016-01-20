@@ -14,12 +14,14 @@ model_save_path = "modelsaves/"
 pred_save_path = "predsaves/"
 loader = DataLoader(verbose=False)
 
+# Get GP model object
 def get_gp_model(dataset, aid, filename_suffix):
     path = model_save_path + dataset + "/" + str(aid) + filename_suffix + "/gp_model.pkl"
     while not os.path.isfile(path):
         time.sleep(3)
     return joblib.load(path)
 
+# Plot an array of predictions, and datapoints if given
 def plot_predictions(price_preds, sigmas, dates, datapoints=None, name="", vert_line_x=None):
     price_preds, sigmas, t = np.asarray(price_preds), np.asarray(sigmas), np.asarray(dates)
     fig = plt.figure()
@@ -56,6 +58,7 @@ form = [("F", "D", "Freehold Detached", 'r', '--', 2, 'x'),
         ("L", "S", "Lease Semi-detached", 'c', '-', 1, 'o'),
         ("L", "T", "Lease Terraces", 'b', '-', 1, 'o')]
 
+# Plot all property/estate type combinations for a given area
 def plot_all(dataset, aid, fn_suffix):
 
     #gp_model = get_gp_model(dataset, aid, fn_suffix)

@@ -1,4 +1,3 @@
-import sys
 import json
 import joblib
 import Utils
@@ -27,34 +26,38 @@ class GPHandler(object):
         # return self.status_response(500, "Request cancelled")
         return self.handle_gp_request(request)
 
-    # Handle a GP request
-    def handle_gp_request(self, req):
-        dataset = str(req["dataset"])
-        aid = str(req["id"])
-
-        # Make aid an integer if it is a grid square id
-        if not aid[0].isalpha():
-            aid = int(float(aid))
-
-        # Get training params and data
+    # Get training params and data for a given GP request
+    def get_params_and_data(self, request):
+        dataset, aid = request["dataset"], request["id"]
         params = self.loader.load_params_for_aid(dataset, aid)
         if params == None:
             print "Params not found for area id: " + str(aid) + ", using SW7 params..."
             params = self.loader.load_params_for_aid(dataset, "SW7")
             print params
-        if "params" in req:
-            for param in req["params"]:
-                params[param] = req["params"][param]
-        train_data = self.loader.load_data_for_params(dataset, aid, params)
+        if "params" in request:
+            for param in request["params"]:
+                params[param] = request["params"][param]
+        return params, self.loader.load_data_for_params(dataset, aid, params)
+
+    # Handle a GP request
+    def handle_gp_request(self, request):
+        dataset = str(request["dataset"])
+        aid = str(request["id"])
+
+        # Make aid an integer if it is a grid square id
+        if not aid[0].isalpha():
+            aid = int(float(aid))
+
+        # Get params and data for request
+        params, train_data = self.get_params_and_data(request)
         n = len(train_data)
         if n < 20:
             print "n less than 20, for aid: " + str(aid)
             return self.status_response(405, "n less than 20 for aid: " + str(aid))
 
         # Print processing message
-        sys.stdout.write("\rProcessing GP request for area id = " + str(aid) + \
+        Utils.sys_print("\rProcessing GP request for area id = " + str(aid) + \
                         ", n = " + str(n) + ", in dataset " + dataset + "...")
-        sys.stdout.flush()
         
         # Create and fit gp model
         data_formatter = ZooplaSalesDataFormatter(params) if dataset == "zoopla_sales" else LandRegDataFormatter(params)
@@ -76,7 +79,6 @@ class GPHandler(object):
         granularity = float(1)/float(12)
         steps = (max_year-min_year)*12 + 1
         dates = [(min_year + x * granularity) for x in range(0, steps)]
-
 
         # Request from zoopla data
 
@@ -134,15 +136,16 @@ class GPHandler(object):
 
         # TODO: Store final kernel params back into areas db
 
-        sys.stdout.write("\rAwaiting GP Requests.                                                       ")
-        sys.stdout.flush()
+        Utils.sys_print("\rAwaiting GP Requests.                                                       ")
 
         # Return ok response
         return self.status_response(200, "Gaussian process generated.")
 
+    # Returns a status response object for a given status number and message
     def status_response(self, num, message):
         return { "status": num, "message": message }
             
+    # Checks a given request to make sure it's a GP request
     def check_request(self, req):
         if("dataset" not in req):
             print("Error 402: Request missing dataset")

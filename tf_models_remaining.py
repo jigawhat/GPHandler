@@ -1,3 +1,7 @@
+'''
+    Prints the number of trend optimiser models remaining for a given area id
+'''
+
 import os
 import sys
 import json
