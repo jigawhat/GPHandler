@@ -11,9 +11,12 @@ Make sure you have gcc installed before (installing scipy with pip will not work
 
 ### Running tests
 To run tests, first install py.test by running pip install py.test
+
 Then, just run the command: py.test
+
 This will run the test suite (in the tests/ folder)
 
 ### Running the GPHandler
 To run the GPHandler and start consuming jobs from the GP request RabbitMQ queue, run the command:
+
 python main_gp.py release
